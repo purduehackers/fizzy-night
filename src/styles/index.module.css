@@ -1,0 +1,23 @@
+.megaCarousel {
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    height: 90dvh;
+}
+
+.footer {
+    border-radius: 16px;
+    box-shadow: 0px;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: 10dvh;
+    padding: 0px;
+}
+
+.albumArt {
+    margin: 8px;
+    aspect-ratio: 1;
+    height: calc(10dvh - 16px);
+}
