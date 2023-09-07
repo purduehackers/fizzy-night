@@ -17,6 +17,7 @@ const playing = async (req: NextApiRequest, res: NextApiResponse) => {
             },
         }
     ).then((r) => (r.status !== 200 ? undefined : r.json()));
+
     if (!data) {
         return res.json({
             title: "Not playing",
@@ -25,12 +26,18 @@ const playing = async (req: NextApiRequest, res: NextApiResponse) => {
             percent: -1,
         });
     }
+    
     const { name: title, artists } = data.item;
-    const image = data.item.album.images[0].url;
+
+    let image = "unknown-album.png";
+    if (data.item.album.images[0]) {
+        image = data.item.album.images[0].url;
+    }
+
     //@ts-ignore
     const _artists = artists.map(({ name }) => name);
     const artist = _artists.length > 1 ? _artists.join(", ") : _artists[0];
-    
+
     const percent = data.progress_ms / data.item.duration_ms;
 
     return res.json({ title, artist, image, percent });
