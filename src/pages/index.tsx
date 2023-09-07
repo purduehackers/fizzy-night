@@ -1,22 +1,45 @@
-import styles from '@/styles/index.module.css'
-import { FC } from 'react';
-import { MegaCarousel } from '@/megacarousel/megacarousel';
-import Layout, { Content, Footer } from 'antd/es/layout/layout';
+import styles from "@/styles/index.module.css";
+import { FC, useState } from "react";
+import { MegaCarousel } from "@/components/megacarousel";
+import { Layout } from "antd";
+import { Footer } from "@/components/footer";
+import ReactCanvasConfetti from "react-canvas-confetti";
 
 const Home: FC = () => {
-    return (
-        <Layout>
-            <Content>
-                <MegaCarousel rootClassName={`${styles.megaCarousel}`} />
-            </Content>
+    const [shootConfetti, setShootConfetti] = useState(false);
 
-            {/* <div className={`${styles.footer}`}> */}
-            <Footer className={`${styles.footer}`}>
-                <img className={`${styles.albumArt}`} src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Spotify_icon.svg/1982px-Spotify_icon.svg.png" alt="Album Art" />
-            </Footer>
-            {/* </div> */}
+    const triggerConfetti = () => {
+        setShootConfetti(true);
+
+        setTimeout(() => {
+            setShootConfetti(false);
+        }, 1000);
+    };
+
+    return (
+        <Layout rootClassName={`${styles.mainLayout}`}>
+            <Layout.Content>
+                <MegaCarousel rootClassName={`${styles.megaCarousel}`} />
+            </Layout.Content>
+
+            <Footer
+                confettiCallback={triggerConfetti}
+            />
+
+            <ReactCanvasConfetti
+                style={{
+                    position: "fixed",
+                    width: "100dvw",
+                    height: "100dvh",
+                }}
+                fire={shootConfetti}
+                reset={false}
+                particleCount={1000}
+                spread={360}
+                ticks={1000}
+            />
         </Layout>
-    )
-}
+    );
+};
 
 export default Home;

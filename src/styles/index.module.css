@@ -1,8 +1,13 @@
+.mainLayout {
+    width: 100dvw;
+    height: 100dvh;
+}
+
 .megaCarousel {
     top: 0px;
     left: 0px;
     right: 0px;
-    height: 90dvh;
+    height: calc(100dvh - 140px);
 }
 
 .footer {
@@ -12,12 +17,108 @@
     bottom: 0px;
     left: 0px;
     right: 0px;
-    height: 10dvh;
+    height: 140px;
     padding: 0px;
+    z-index: 0;
+}
+
+.songProgress {
+    display: block;
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    
+    height: 116px;
+    aspect-ratio: 1;
 }
 
 .albumArt {
-    margin: 8px;
+    position: absolute;
+    left: 18px;
+    top: 18px;
+    height: 104px;
     aspect-ratio: 1;
-    height: calc(10dvh - 16px);
+    border-radius: 50%;
+}
+
+.phLogo {
+    display: inline;
+    height: 108px;
+    aspect-ratio: 1;
+}
+
+.lightningTime {
+    position: relative;
+
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 6px;
+
+    background: #000;
+    background-clip: padding-box;
+    border: solid 4px transparent;
+    border-radius: 12px;
+}
+
+.lightningTimeBorderColor {
+    position: absolute;
+    transition-property: background;
+    transition-duration: 0.5s;
+    top: -4px;
+    right: -4px;
+    bottom: -4px;
+    left: -4px;
+    border-radius: 12px;
+    z-index: -1;
+}
+
+.lightningTimeBorderMask {
+    position: absolute;
+    background: #000;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    border-radius: 9px;
+    z-index: -1;
+}
+
+@keyframes focusLightningTime {
+    0% {
+
+    }
+    100% {
+        transform: translate(0, -50vh) scale(3, 3);
+        background: #000;
+    }
+}
+
+@keyframes unfocusLightningTime {
+    0% {
+        transform: translate(0, -50vh) scale(3, 3);
+        background: #000;
+    }
+    100% {
+    }
+}
+
+.lightningTimeFocus {
+    animation-name: focusLightningTime;
+    animation-duration: 5s;
+    animation-timing-function: ease-in-out;
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: forwards;
+}
+
+.lightningTimeUnfocus {
+    animation-name: unfocusLightningTime;
+    animation-duration: 5s;
+    animation-timing-function: ease-in-out;
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: forwards;
 }

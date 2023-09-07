@@ -1,13 +1,9 @@
-import { FC } from 'react';
+import { FC } from "react";
 
 export type MegaCarouselProps = {
     rootClassName: string;
 };
 
 export const MegaCarousel: FC<MegaCarouselProps> = ({ rootClassName }) => {
-    return (
-        <div className={rootClassName}>
-        
-        </div>
-    )
-}
+    return <div className={rootClassName}></div>;
+};
