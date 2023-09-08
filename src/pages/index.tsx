@@ -4,6 +4,7 @@ import { MegaCarousel } from "@/components/megacarousel";
 import { Layout } from "antd";
 import { Footer } from "@/components/footer";
 import ReactCanvasConfetti from "react-canvas-confetti";
+import { DoorbellCard, DoorbellContext } from "@/components/doorbell/doorbell";
 
 const Home: FC = () => {
     const [shootConfetti, setShootConfetti] = useState(false);
@@ -22,9 +23,7 @@ const Home: FC = () => {
                 <MegaCarousel rootClassName={`${styles.megaCarousel}`} />
             </Layout.Content>
 
-            <Footer
-                confettiCallback={triggerConfetti}
-            />
+            <Footer confettiCallback={triggerConfetti} />
 
             <ReactCanvasConfetti
                 style={{
@@ -38,6 +37,10 @@ const Home: FC = () => {
                 spread={360}
                 ticks={1000}
             />
+
+            <DoorbellContext>
+                <DoorbellCard />
+            </DoorbellContext>
         </Layout>
     );
 };

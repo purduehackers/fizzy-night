@@ -3,13 +3,14 @@ import { FC, useEffect, useState } from "react";
 import styles from "@/styles/index.module.css";
 import { LightningTime } from "@purduehackers/time";
 import { format } from "date-fns";
+import useSound from "use-sound";
 
 export type FooterProps = {
     confettiCallback: () => void;
 };
 
-const midnight = "0~0~0|0";
-const midnightWarmupTime = "f~f~f|0";
+const midnightWarmupTime   = "f~f~f|0";
+const midnight             = "0~0~0|0";
 const midnightCooldownTime = "0~0~0|5";
 
 export const Clock: FC<FooterProps> = ({ confettiCallback }) => {
@@ -18,6 +19,8 @@ export const Clock: FC<FooterProps> = ({ confettiCallback }) => {
     const [lightningTimeColors, setLightningTimeColors] = useState<any>();
 
     const [startMidnightParty, setStartMidnightParty] = useState(false);
+    
+    const [play] = useSound("/party-horn.mp3");
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -41,10 +44,11 @@ export const Clock: FC<FooterProps> = ({ confettiCallback }) => {
             setStartMidnightParty(true);
         } else if (lightningTime == midnight) {
             confettiCallback();
+            play();
         } else if (lightningTime == midnightCooldownTime) {
             setStartMidnightParty(false);
         }
-    }, [lightningTime, confettiCallback]);
+    }, [lightningTime, confettiCallback, play]);
 
     return (
         <Col
