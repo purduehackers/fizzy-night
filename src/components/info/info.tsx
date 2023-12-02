@@ -46,11 +46,10 @@ export const Info: FC<FooterProps> = ({}) => {
                         italic
                         level={2}
                     >
-                        3.0
+                        3.0{" "}
                     </Typography.Title>
                     <Space size={[0, 8]} wrap>
-                        <Tag>beta</Tag>{" "}
-                        <Tag color="magenta">now with more CIRCLES</Tag>
+                        <Tag color="orange">now fully rotated around the Sun!</Tag>
                     </Space>
                 </Col>
             </Row>

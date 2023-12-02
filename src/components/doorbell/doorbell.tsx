@@ -4,7 +4,7 @@ import {
     useRoom,
     useStorage,
     useMutation,
-} from "./liveblocks.config";
+} from "../../../liveblocks.config";
 import { useEffect, type PropsWithChildren, FC } from "react";
 import useSound from "use-sound";
 import styles from "@/styles/doorbell.module.css";

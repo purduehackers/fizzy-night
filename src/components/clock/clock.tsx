@@ -9,9 +9,9 @@ export type FooterProps = {
     confettiCallback: () => void;
 };
 
-const midnightWarmupTime   = "f~f~f|0";
-const midnight             = "0~0~0|0";
-const midnightCooldownTime = "0~0~0|5";
+const midnightWarmupTime   = "0~4~0|0";
+const midnight             = "0~4~1|0";
+const midnightCooldownTime = "0~4~1|5";
 
 export const Clock: FC<FooterProps> = ({ confettiCallback }) => {
     const [time, setTime] = useState("");

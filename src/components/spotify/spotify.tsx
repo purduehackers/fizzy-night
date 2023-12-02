@@ -23,7 +23,9 @@ export const Spotify: FC<FooterProps> = ({}) => {
     });
 
     return (
-        <Col flex="0 0 360px">
+        <Col flex="0 0 360px" style={{
+            opacity: songData.percent == -1 ? 0 : 1
+        }}>
             <Row wrap={false}>
                 <Col flex="0 0 140px">
                     <img

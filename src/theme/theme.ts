@@ -1,12 +1,8 @@
 import type { ThemeConfig } from "antd";
 import { theme } from "antd";
-import { Space_Mono } from "next/font/google";
 
-const space_mono = Space_Mono({
-    weight: "400",
-    subsets: ["latin"],
-    style: "italic",
-});
+import "@fontsource/space-mono/400.css";
+import "@fontsource/space-mono/400-italic.css";
 
 const themeConfig: ThemeConfig = {
     algorithm: theme.darkAlgorithm,
