@@ -13,7 +13,7 @@ export const Spotify: FC<FooterProps> = ({}) => {
         title: "Not playing",
         artist: "Not playing",
         image: "spotify-logo.png",
-        percent: -1
+        percent: -1,
     };
     //@ts-ignore
     const fetcher = (...args) => fetch(...args).then((res) => res.json());
@@ -23,9 +23,12 @@ export const Spotify: FC<FooterProps> = ({}) => {
     });
 
     return (
-        <Col flex="0 0 360px" style={{
-            opacity: songData.percent == -1 ? 0 : 1
-        }}>
+        <Col
+            flex="0 0 440px"
+            style={{
+                opacity: songData.percent == -1 ? 0 : 1,
+            }}
+        >
             <Row wrap={false}>
                 <Col flex="0 0 140px">
                     <img
@@ -44,7 +47,7 @@ export const Spotify: FC<FooterProps> = ({}) => {
                 </Col>
                 <Col
                     style={{
-                        width: "200px",
+                        width: "300px",
                         flexShrink: "0",
                         float: "left",
                         textAlign: "right",
@@ -55,20 +58,37 @@ export const Spotify: FC<FooterProps> = ({}) => {
                             marginTop: 12,
                         }}
                         italic
-                        level={3}
+                        level={4}
                     >
                         now playing:
                     </Typography.Title>
-                    <Typography.Text italic>
-                        {songData.title.length > 23 ? (
-                            <Marquee speed={25}>{songData.title}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</Marquee>
+                    <Typography.Text
+                        style={{
+                            marginTop: 12,
+                            fontSize: 20,
+                        }}
+                        italic
+                    >
+                        {songData.title.length > 22 ? (
+                            <Marquee speed={25}>
+                                {songData.title}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </Marquee>
                         ) : (
                             <>
                                 {songData.title}
                                 <br />
                             </>
                         )}
-                        {songData.artist}
+                        {songData.artist.length > 22 ? (
+                            <Marquee speed={25}>
+                                {songData.artist}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </Marquee>
+                        ) : (
+                            <>
+                                {songData.artist}
+                                <br />
+                            </>
+                        )}
                     </Typography.Text>
                 </Col>
             </Row>

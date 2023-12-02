@@ -8,7 +8,7 @@ export type FooterProps = {};
 export const Info: FC<FooterProps> = ({}) => {
     return (
         <Col
-            flex="0 0 380px"
+            flex="0 0 440px"
             style={{
                 paddingTop: 6,
             }}
@@ -49,7 +49,9 @@ export const Info: FC<FooterProps> = ({}) => {
                         3.0{" "}
                     </Typography.Title>
                     <Space size={[0, 8]} wrap>
-                        <Tag color="orange">now fully rotated around the Sun!</Tag>
+                        <Tag color="orange">
+                            now fully rotated around the Sun!
+                        </Tag>
                     </Space>
                 </Col>
             </Row>
