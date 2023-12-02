@@ -14,7 +14,7 @@
     border-radius: 16px;
     box-shadow: 0px;
     position: absolute;
-    bottom: 0px;
+    bottom: 12px;
     left: 0px;
     right: 0px;
     height: 140px;
@@ -27,7 +27,7 @@
     position: absolute;
     left: 12px;
     top: 12px;
-    
+
     height: 116px;
     aspect-ratio: 1;
 }
@@ -86,7 +86,6 @@
 
 @keyframes focusLightningTime {
     0% {
-
     }
     100% {
         transform: translate(0, -50vh) scale(3, 3);

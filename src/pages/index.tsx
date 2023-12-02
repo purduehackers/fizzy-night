@@ -1,6 +1,6 @@
 import styles from "@/styles/index.module.css";
 import { FC, useState } from "react";
-import { MegaCarousel } from "@/components/megacarousel";
+import { DiscordFeed } from "@/components/discordfeed";
 import { Layout } from "antd";
 import { Footer } from "@/components/footer";
 import ReactCanvasConfetti from "react-canvas-confetti";
@@ -20,7 +20,7 @@ const Home: FC = () => {
     return (
         <Layout rootClassName={`${styles.mainLayout}`}>
             <Layout.Content>
-                <MegaCarousel rootClassName={`${styles.megaCarousel}`} />
+                <DiscordFeed rootClassName={`${styles.megaCarousel}`} />
             </Layout.Content>
 
             <Footer confettiCallback={triggerConfetti} />
