@@ -238,11 +238,14 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@purduehackers/time@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@purduehackers/time/-/time-0.5.1.tgz#0d26e70c3d47b123ffcf2c02b4bf6902dd6db87d"
-  integrity sha512-ZmBfd9gpuiQwFJE/7YaUw0FuFWEWfJw3QCS1NQQoyDnghjhlIJDRjDeMJotviuJ/PEu7imsoKFYDnJHm4D80lg==
+"@purduehackers/time@^0.6.12":
+  version "0.6.12"
+  resolved "https://registry.yarnpkg.com/@purduehackers/time/-/time-0.6.12.tgz#dea05e628a06bcc740980a36dc036960cf440fa0"
+  integrity sha512-K5t8uy+jgzgYy8AmHmBYAxMFS8Tt1XxGM2p8TO8AvLHDdi0uXHRUyx3M4hNwmV1zNjFuE3DO9Ic7xabozNYrDQ==
   dependencies:
+    "@types/react" "^18.2.22"
+    date-fns "^2.30.0"
+    react "^18.2.0"
     rgb-hex "3.0.0"
 
 "@rc-component/color-picker@~1.4.0":
@@ -355,6 +358,15 @@
   version "18.2.21"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.21.tgz#774c37fd01b522d0b91aed04811b58e4e0514ed9"
   integrity sha512-neFKG/sBAwGxHgXiIxnbm3/AAVQ/cMRS93hvBpg8xYRbeQSPVABp9U2bRnPf0iI4+Ucdv3plSxKK+3CW2ENJxA==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
+
+"@types/react@^18.2.22":
+  version "18.2.40"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.40.tgz#b1cc2bafdc81da3c9bb105cfe8b91211bbce2e0d"
+  integrity sha512-H+BUhb9C1zBtogDLAk+KCNRKiHDrqSwQT/0z0PVTwMFBxqg3011ByLomADtgkgMkfwj4AMOiXBReyLTUBg681g==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -2347,7 +2359,7 @@ react-is@^16.12.0, react-is@^16.13.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react@18.2.0:
+react@18.2.0, react@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
