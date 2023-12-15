@@ -23,7 +23,7 @@ export const DiscordFeed: FC = () => {
                         key={message.uuid}
                         {...message}
                     />
-                )).toReversed()
+                ))
             }
             <h1 className={`text-neutral-600 text-3xl mb-4 text-center`}>
                 Post more to make

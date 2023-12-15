@@ -7,7 +7,7 @@ const fetchPosts = async (req: NextApiRequest, res: NextApiResponse) => {
     })
     await client.connect();
 
-    const { rows } = await client.sql`select * from messages`
+    const { rows } = await client.sql`select * from messages order by ctid desc limit 6;`
 
     res.json(rows);
 
