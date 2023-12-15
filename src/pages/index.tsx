@@ -1,12 +1,16 @@
-import styles from "@/styles/index.module.css";
+import {
+    DoorbellCard,
+    DoorbellContext,
+} from "@/components/Doorbell/doorbell";
 import { FC, useState } from "react";
-import { DiscordFeed } from "@/components/discordfeed";
-import { Layout } from "antd";
-import { Footer } from "@/components/footer";
-import ReactCanvasConfetti from "react-canvas-confetti";
-import { DoorbellCard, DoorbellContext } from "@/components/doorbell/doorbell";
+import { ConfettiCannon } from "@/components/ConfettiCannon/confetticannon";
+import { Info } from "@/components/InfoCard/info";
+import { Spotify } from "@/components/Spotify/spotify";
+import { ClockNoSSR } from "@/components/Clock/clock";
+import { DiscordFeed } from "@/components/DiscordFeed/discordfeed";
+import { LunarLander } from "@/components/LunarLander/lunarlander";
 
-const Home: FC = () => {
+const MainPage: FC = () => {
     const [shootConfetti, setShootConfetti] = useState(false);
 
     const triggerConfetti = () => {
@@ -18,31 +22,35 @@ const Home: FC = () => {
     };
 
     return (
-        <Layout rootClassName={`${styles.mainLayout}`}>
-            <Layout.Content>
-                <DiscordFeed rootClassName={`${styles.megaCarousel}`} />
-            </Layout.Content>
+        <main className="overflow-hidden">
+            <div className={`w-screen h-screen bg-black`}>
+                <div className={`w-screen h-screen flex flex-col`}>
+                    <div className={`flex flex-row grow justify-stretch max-h-[calc(100vh-140px)]`}>
+                        <LunarLander/>
+                        <DiscordFeed/>
+                    </div>
 
-            <Footer confettiCallback={triggerConfetti} />
+                    <div className={`flex flex-row  h-[140px] justify-between`}>
+                        <Spotify />
+                        <Info
+                            title={"HACK NIGHT"}
+                            tagline={"out of the woods"}
+                            taglineColour={"green"}
+                            version={"3.11.2"}
+                        />
+                    </div>
+                </div>
 
-            <ReactCanvasConfetti
-                style={{
-                    position: "fixed",
-                    width: "100dvw",
-                    height: "100dvh",
-                }}
-                fire={shootConfetti}
-                reset={false}
-                particleCount={1000}
-                spread={360}
-                ticks={1000}
-            />
+                <ClockNoSSR confettiCallback={triggerConfetti} />
 
-            <DoorbellContext>
-                <DoorbellCard />
-            </DoorbellContext>
-        </Layout>
+                <ConfettiCannon shootConfetti={shootConfetti} />
+
+                <DoorbellContext>
+                    <DoorbellCard />
+                </DoorbellContext>
+            </div>
+        </main>
     );
 };
 
-export default Home;
+export default MainPage;

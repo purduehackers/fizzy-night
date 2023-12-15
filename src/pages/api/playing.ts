@@ -1,7 +1,7 @@
 // Thank you, MatthewStanciu <3
 
 import { NextApiRequest, NextApiResponse } from "next";
-import { getSpotifyAccessToken } from "../../components/spotify/getspotifytoken";
+import { getSpotifyAccessToken } from "../../components/Spotify/getspotifytoken";
 
 const playing = async (req: NextApiRequest, res: NextApiResponse) => {
     //@ts-ignore

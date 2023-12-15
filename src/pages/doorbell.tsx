@@ -1,20 +1,17 @@
-import Head from "next/head";
-import { Suspense } from "react";
 import {
-    DoorbellContext,
     DoorbellButton,
-} from "../components/doorbell/doorbell";
-import { Layout } from "antd";
-import styles from "@/styles/doorbell.module.css";
+    DoorbellContext,
+} from "@/components/Doorbell/doorbell";
+import { FC } from "react";
 
-export default function Page() {
+const DoorbellPage: FC = () => {
     return (
-        <Layout className={`${styles.mainLayout}`}>
-            <Layout.Content>
-                <DoorbellContext>
-                    <DoorbellButton />
-                </DoorbellContext>
-            </Layout.Content>
-        </Layout>
+        <main>
+            <DoorbellContext>
+                <DoorbellButton />
+            </DoorbellContext>
+        </main>
     );
-}
+};
+
+export default DoorbellPage;

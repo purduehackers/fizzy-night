@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes doorbell-spinner {
+    0% {
+        transform: translateY(-100%) rotate(0deg);
+    }
+    100% {
+        transform: translateY(-100%) rotate(360deg);
+    }
+}
+@keyframes message-introduced {
+    0% {
+        transform: translatex(200%);
+    }
+    100% {
+        transform: translatex(0%);
+    }
+}
