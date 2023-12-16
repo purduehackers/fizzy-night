@@ -276,6 +276,19 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@p5-wrapper/next@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@p5-wrapper/next/-/next-1.0.1.tgz#bebd390b5f81a9e3aadb26df78125098db6ad78d"
+  integrity sha512-oK9NEb1RVsUX1+ykPmyMqM2xiRlIvpRcYmDNuDigowAaNlx4eGeLhNJBOBVL8dEqeTObYn0jI7xUxIhvp2jbFA==
+
+"@p5-wrapper/react@^4.3.2":
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/@p5-wrapper/react/-/react-4.3.2.tgz#68eaee884b408096a35a3f83666fef6aae7ee533"
+  integrity sha512-m7MoL63grVVyu39czEi3V3tz29VM4zzd4K9MjNWZ5t7jb4itgHpw6FCiSG2JzU1SqElKgo9ny8NliavPWYYdrw==
+  dependencies:
+    microdiff "^1.3.2"
+    p5 "^1.9.0"
+
 "@purduehackers/time@^0.6.14":
   version "0.6.14"
   resolved "https://registry.yarnpkg.com/@purduehackers/time/-/time-0.6.14.tgz#9f482066e80720bc463665c7b86bc7d6e0422e32"
@@ -380,6 +393,11 @@
   integrity sha512-D08YG6rr8X90YB56tSIuBaddy/UXAA9RKJoFvrsnogAum/0pmjkgi4+2nx96A330FmioegBWmEYQ+syqCFaveg==
   dependencies:
     undici-types "~5.26.4"
+
+"@types/p5@^1.7.4":
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/@types/p5/-/p5-1.7.4.tgz#bcf20df35b2e897e9accb550b64b59c1c6887312"
+  integrity sha512-cMF3SvlBSzJV9m3enUYBx9UvJmQP9fxmPS17EDtYJVCQwwNMc/BRrDtHUHaxZH+BhuESNuUnfUKNVpJIjRT+Xw==
 
 "@types/pg@8.6.6":
   version "8.6.6"
@@ -1958,6 +1976,11 @@ merge2@^1.3.0, merge2@^1.4.1:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
+microdiff@^1.3.2:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/microdiff/-/microdiff-1.3.2.tgz#b4fec53aca97371d5409a354913a65be2daec11d"
+  integrity sha512-pKy60S2febliZIbwdfEQKTtL5bLNxOyiRRmD400gueYl9XcHyNGxzHSlJWn9IMHwYXT0yohPYL08+bGozVk8cQ==
+
 micromatch@^4.0.4, micromatch@^4.0.5:
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-4.0.5.tgz#bc8999a7cbbf77cdc89f132f6e467051b49090c6"
@@ -2158,6 +2181,11 @@ p-locate@^5.0.0:
   integrity sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==
   dependencies:
     p-limit "^3.0.2"
+
+p5@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/p5/-/p5-1.9.0.tgz#04c406ae683449106d514108648035b21aa850fb"
+  integrity sha512-+5/hz0ZokCDf7BMMAeemE7FIo7gFZK7ImL62acHLXZwerGjqj+171bnaAWj4aCFCx6fwysAr2U7/AKuPyPhehA==
 
 parent-module@^1.0.0:
   version "1.0.1"
