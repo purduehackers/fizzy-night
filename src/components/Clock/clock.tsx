@@ -6,9 +6,9 @@ export type ClockProps = {
     confettiCallback: () => void;
 };
 
-const midnightWarmupTime = "d~5~4|5";
+const midnightWarmupTime = "f~f~e|b";
 const midnight = "d~5~5|5";
-const midnightCooldownTime = "d~5~5|a";
+const midnightCooldownTime = "0~0~0|5";
 
 const midnightPartyStates = [
     "bottom-0",
