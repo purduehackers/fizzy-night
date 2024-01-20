@@ -7,7 +7,7 @@ export type ClockProps = {
 };
 
 const midnightWarmupTime = "f~f~e|b";
-const midnight = "d~5~5|5";
+const midnight = "0~0~0";
 const midnightCooldownTime = "0~0~0|5";
 
 const midnightPartyStates = [
