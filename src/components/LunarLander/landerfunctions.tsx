@@ -104,7 +104,7 @@ export const drawStats = (p5: P5CanvasInstance, camera: CameraData, lander: Land
     p5.rotate(-camera.r);
     p5.scale(1 / camera.s);
 
-    p5.textSize(50);
+    p5.textSize(40);
     p5.textAlign(p5.CENTER, p5.CENTER);
     if (lander.a == 1) {
         p5.fill(0, 255, 0);
@@ -115,13 +115,13 @@ export const drawStats = (p5: P5CanvasInstance, camera: CameraData, lander: Land
     } 
 
     p5.translate(-p5.width / 2, -p5.height / 2);
-    p5.textSize(30);
+    p5.textSize(25);
     p5.textAlign(p5.LEFT, p5.TOP);
     p5.fill(255, 255, 255);
 
     p5.text(`Altitude: ${lander.y.toFixed(1)}`, 4, 4);
-    p5.text(`Horizontal Speed: ${lander.vx.toFixed(1)}`, 4, 38);
-    p5.text(`Vertical Speed: ${lander.vy.toFixed(1)}`, 4, 72);
+    p5.text(`Horz Speed: ${lander.vx.toFixed(1)}`, 4, 38);
+    p5.text(`Vert Speed: ${lander.vy.toFixed(1)}`, 4, 72);
 
     let visual_timer = (endgame_timer < 0) ? 0 : (6000 - endgame_timer) / 1000;
 
@@ -142,7 +142,7 @@ export const drawGameState = (p5: P5CanvasInstance, camera: CameraData, game_sta
     p5.rotate(-camera.r);
     p5.scale(1 / camera.s);
 
-    p5.translate(-p5.width / 2, -p5.height / 2);
+    p5.translate(-p5.width / 2, -p5.height / 2 + 16);
     p5.textSize(30);
     p5.textAlign(p5.LEFT, p5.TOP);
     p5.fill(255, 255, 255);
