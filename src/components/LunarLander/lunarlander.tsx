@@ -22,12 +22,15 @@ import {
     mapWidth,
 } from "./landerfunctions";
 import { Socket, io } from "socket.io-client";
+import { Font } from "p5";
 
 let all_landers: { [id: string]: LanderObject } = {};
 
 let my_lander: LanderObject = default_lander();
 
 const server_url = "wss://phws.fizzyapple12.com";
+
+const font_path = "/vectrex-bold.ttf";
 
 let socket: Socket;
 
@@ -43,6 +46,8 @@ let map_lines: MapLines = [];
 let endgame_timer: number = 0;
 
 let parent_canvas;
+
+let font: Font;
 
 // TODO: IMPLEMENT SHOOTING
 
@@ -80,6 +85,8 @@ const dashboard_sketch: Sketch = (p5: P5CanvasInstance) => {
         });
 
         map_lines = loadMap(p5, current_map_seed);
+
+        font = p5.loadFont(font_path);
     };
 
 
@@ -89,6 +96,8 @@ const dashboard_sketch: Sketch = (p5: P5CanvasInstance) => {
 
     p5.draw = () => {
         p5.background(0);
+
+        p5.textFont(font);
 
         camera_data = camera2d(
             p5,
@@ -183,6 +192,8 @@ const client_sketch: Sketch = (p5: P5CanvasInstance) => {
                 time: 0,
             });
         });
+
+        font = p5.loadFont(font_path);
     };
 
     p5.windowResized = () => {
@@ -191,6 +202,8 @@ const client_sketch: Sketch = (p5: P5CanvasInstance) => {
 
     p5.draw = () => {
         p5.background(0);
+
+        p5.textFont(font);
 
         if (current_game_stage == 0) {
             camera_data = camera2d(
