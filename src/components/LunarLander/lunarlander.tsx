@@ -27,7 +27,7 @@ let all_landers: { [id: string]: LanderObject } = {};
 
 let my_lander: LanderObject = default_lander();
 
-const server_url = "wss://54.88.156.115:5000";
+const server_url = "wss://phws.fizzyapple12.com";
 
 let socket: Socket;
 
@@ -54,7 +54,7 @@ const dashboard_sketch: Sketch = (p5: P5CanvasInstance) => {
             socket.disconnect();
         }
 
-        socket = io(server_url);
+        socket = io(server_url, { secure: true });
 
         socket.on("landers", (updated_landers) => {
             all_landers = updated_landers;
@@ -141,7 +141,7 @@ const client_sketch: Sketch = (p5: P5CanvasInstance) => {
             socket.disconnect();
         }
 
-        socket = io(server_url);
+        socket = io(server_url, {secure:true});
 
         console.log("socket startup!");
 
