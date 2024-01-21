@@ -26,6 +26,7 @@
     "react-canvas-confetti": "^1.4.0",
     "react-dom": "^18",
     "react-fast-marquee": "^1.6.2",
+    "socket.io-client": "^4.7.4",
     "swr": "^2.2.4",
     "use-sound": "^4.0.1"
   },

@@ -6,7 +6,7 @@ import { FC, useState } from "react";
 import { ConfettiCannon } from "@/components/ConfettiCannon/confetticannon";
 import { Info } from "@/components/InfoCard/info";
 import { Spotify } from "@/components/Spotify/spotify";
-import { ClockNoSSR } from "@/components/clock/clock";
+import { ClockNoSSR } from "@/components/Clock/clock";
 import { DiscordFeed } from "@/components/DiscordFeed/discordfeed";
 import { DashboardLunarLander } from "@/components/LunarLander/lunarlander";
 
