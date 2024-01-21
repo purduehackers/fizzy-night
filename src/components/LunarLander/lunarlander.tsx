@@ -27,7 +27,7 @@ let all_landers: { [id: string]: LanderObject } = {};
 
 let my_lander: LanderObject = default_lander();
 
-const server_url = "ws://54.88.156.115:5000";
+const server_url = "wss://54.88.156.115:5000";
 
 let socket: Socket;
 
