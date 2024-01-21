@@ -8,7 +8,7 @@ import { Info } from "@/components/InfoCard/info";
 import { Spotify } from "@/components/Spotify/spotify";
 import { ClockNoSSR } from "@/components/Clock/clock";
 import { DiscordFeed } from "@/components/DiscordFeed/discordfeed";
-import { LunarLander } from "@/components/LunarLander/lunarlander";
+import { DashboardLunarLander } from "@/components/LunarLander/lunarlander";
 
 const MainPage: FC = () => {
     const [shootConfetti, setShootConfetti] = useState(false);
@@ -26,7 +26,7 @@ const MainPage: FC = () => {
             <div className={`w-screen h-screen bg-black`}>
                 <div className={`w-screen h-screen flex flex-col`}>
                     <div className={`flex flex-row grow justify-stretch max-h-[calc(100vh-140px)]`}>
-                        <LunarLander/>
+                        <DashboardLunarLander/>
                         <DiscordFeed/>
                     </div>
 
