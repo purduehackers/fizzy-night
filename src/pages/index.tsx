@@ -22,7 +22,7 @@ const MainPage: FC = () => {
     };
 
     return (
-        <main className="overflow-hidden">
+        <main className="overflow-hidden select-none">
             <div className={`w-screen h-screen bg-black`}>
                 <div className={`w-screen h-screen flex flex-col`}>
                     <div className={`flex flex-row grow justify-stretch max-h-[calc(100vh-140px)]`}>

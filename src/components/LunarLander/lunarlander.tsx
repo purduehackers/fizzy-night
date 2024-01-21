@@ -234,7 +234,7 @@ const client_sketch: Sketch = (p5: P5CanvasInstance) => {
 
         for (let touch of p5.touches as any[]) {
             if (touch.x < (p5.width / 3)) found_lt = true;
-            else if (touch.x < (p5.width / 2 / 3)) found_ct = true;
+            else if (touch.x < (p5.width * 2 / 3)) found_ct = true;
             else found_rt = true;
         }
 

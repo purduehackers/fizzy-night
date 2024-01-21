@@ -13,7 +13,7 @@ const MainPage: FC = () => {
     };
 
     return (
-        <main className="overflow-hidden w-screen h-screen bg-black">
+        <main className="overflow-hidden select-none w-screen h-screen bg-black">
             <LocalLunarLanderNoSSR/>
         </main>
     );
