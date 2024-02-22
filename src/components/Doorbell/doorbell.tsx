@@ -25,7 +25,7 @@ export const DoorbellButton: FC = () => {
         if (ringing) {
             play();
         }
-    }, [ringing]);
+    }, [ringing, play]);
 
     const connection = room.getStatus();
     const statusText =
@@ -78,7 +78,7 @@ export const DoorbellButton: FC = () => {
                                 text-[30vmin]
                                 my-auto`}
                     onClick={ringTheBell}
-                    disabled={connection !== "connected"}
+                    disabled={connection !== "connected" || (ringing || false)}
                 >
                     <h1
                         className={`transition-all 
