@@ -32,10 +32,10 @@ const MainPage: FC = () => {
                     <div className={`flex flex-row  h-[140px] justify-between`}>
                         <Spotify />
                         <Info
-                            title={"HACK NIGHT"}
-                            tagline={"now with more bubbles n stuff!"}
-                            taglineColour={"green"}
-                            version={"4.2"}
+                            title={"HACK LITE"}
+                            tagline={"knockoff hack night!"}
+                            taglineColour={"gray"}
+                            version={""}
                         />
                     </div>
                 </div>
