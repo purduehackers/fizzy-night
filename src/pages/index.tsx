@@ -29,13 +29,14 @@ const MainPage: FC = () => {
                         <DiscordFeed />
                     </div>
 
-                    <div className={`flex flex-row  h-[140px] justify-between`}>
+                    <div className={`flex flex-row h-[140px] justify-between`}>
                         <Spotify />
                         <Info
-                            title={"HACK LITE"}
-                            tagline={"knockoff hack night!"}
-                            taglineColour={"gray"}
-                            version={""}
+                            title={"HACK NIGHT"}
+                            tagline={"which path will you choose?"}
+                            taglineColour={"blue"}
+                            taglineColour2="red"
+                            version={"4.3"}
                         />
                     </div>
                 </div>
