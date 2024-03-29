@@ -1,13 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-import { useInterval } from "@/hooks/useInterval";
-import { useLightningTimeClock } from "@purduehackers/time/react";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 
 export type InfoProps = {
     title: string;
     tagline: string;
     taglineColour: string;
-    taglineColour2: string;
     version: string;
 };
 
@@ -16,18 +13,7 @@ export const Info: FC<InfoProps> = ({
     tagline,
     version,
     taglineColour,
-    taglineColour2,
 }) => {
-    const [actualTaglineColor, setActualTaglineColor] = useState(taglineColour);
-    const { lightningTimeClock } = useLightningTimeClock();
-    useEffect(() => {
-        setActualTaglineColor(
-            actualTaglineColor === taglineColour
-                ? taglineColour2
-                : taglineColour
-        );
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lightningTimeClock]);
     return (
         <div className={`h-full flex flex-row`}>
             <div className={`mb-8 mx-4`}>
@@ -46,9 +32,9 @@ export const Info: FC<InfoProps> = ({
                     className={`text-sm
                                 border-[1px]
                                 rounded-md 
-                                ${`border-${actualTaglineColor}-400`}
-                                ${`bg-${actualTaglineColor}-950`}
-                                ${`text-${actualTaglineColor}-400`}
+                                ${`border-${taglineColour}-400`}
+                                ${`bg-${taglineColour}-950`}
+                                ${`text-${taglineColour}-400`}
                                 mr-auto
                                 px-2
                                 text-center`}
