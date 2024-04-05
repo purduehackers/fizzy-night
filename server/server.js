@@ -25,7 +25,7 @@ client.on("messageCreate", async (message) => {
         await sql_client.connect();
 
         sql_client.query({
-            text: `insert into messages (authorName, authorImage, content, channel, time, uuid) VALUES ($1, $2, $3, $4, $5, $6);`,
+            text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid) VALUES ($1, $2, $3, $4, $5, $6, $7);`,
             values: [
                 message.author.displayName,
                 message.author.displayAvatarURL(),
@@ -37,6 +37,7 @@ client.on("messageCreate", async (message) => {
                     timeZone: "America/Indiana/Indianapolis",
                 }),
                 message.id,
+                message.guildId ?? null,
             ],
         }).then(() => {
             sql_client.end();
