@@ -97,14 +97,14 @@ export const ParseDiscordMessage: FC<{message: string}> = ({ message }) => {
 
     return (
         messageParts.map((value, index) => {
-            let emojiMatch = value.match(/(?<=<:\w+:)(\d{18})(?=>)/g);
+            let emojiMatch = value.match(/(?<=<:\w+:)(\d*)(?=>)/g);
             if (emojiMatch) {
                 return (
                     <span key={index}><img width="28px" height="28px" className="inline-block" src={`https://cdn.discordapp.com/emojis/${emojiMatch[0]}.webp?size=128&quality=lossless`} alt={`Discord Emoji ${value}`}/> </span>
                 )
             }
 
-            let animatedEmojiMatch = value.match(/(?<=<a:\w+:)(\d{18})(?=>)/g);
+            let animatedEmojiMatch = value.match(/(?<=<a:\w+:)(\d*)(?=>)/g);
             if (animatedEmojiMatch) {
                 return (
                     <span key={index}><img width="28px" height="28px" className="inline-block" src={`https://cdn.discordapp.com/emojis/${animatedEmojiMatch[0]}.gif?size=128&quality=lossless`} alt={`Discord Emoji ${value}`}/> </span>
