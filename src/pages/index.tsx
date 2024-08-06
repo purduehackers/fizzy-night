@@ -1,4 +1,4 @@
-import { DoorbellCard, DoorbellContext } from "@/components/Doorbell/doorbell";
+import { DoorbellCard } from "@/components/Doorbell/doorbell";
 import { FC, useState } from "react";
 import { ConfettiCannon } from "@/components/ConfettiCannon/confetticannon";
 import { Info } from "@/components/InfoCard/info";
@@ -6,6 +6,7 @@ import { Spotify } from "@/components/Spotify/spotify";
 import { ClockNoSSR } from "@/components/Clock/clock";
 import { DiscordFeed } from "@/components/DiscordFeed/discordfeed";
 import { DashboardLunarLander } from "@/components/LunarLander/lunarlander";
+import { DoorbellProvider } from "@/components/Doorbell/doorbellContext";
 
 const MainPage: FC = () => {
     const [shootConfetti, setShootConfetti] = useState(false);
@@ -44,9 +45,9 @@ const MainPage: FC = () => {
 
                 <ConfettiCannon shootConfetti={shootConfetti} />
 
-                <DoorbellContext>
+                <DoorbellProvider>
                     <DoorbellCard />
-                </DoorbellContext>
+                </DoorbellProvider>
             </div>
         </main>
     );

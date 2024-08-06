@@ -1,15 +1,13 @@
-import {
-    DoorbellButton,
-    DoorbellContext,
-} from "@/components/Doorbell/doorbell";
+import { DoorbellButton } from "@/components/Doorbell/doorbell";
+import { DoorbellProvider } from "@/components/Doorbell/doorbellContext";
 import { FC } from "react";
 
 const DoorbellPage: FC = () => {
     return (
         <main>
-            <DoorbellContext>
+            <DoorbellProvider>
                 <DoorbellButton />
-            </DoorbellContext>
+            </DoorbellProvider>
         </main>
     );
 };
