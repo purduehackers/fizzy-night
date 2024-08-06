@@ -2,11 +2,13 @@ import {
     createContext,
     FC,
     PropsWithChildren,
+    useCallback,
     useContext,
     useEffect,
     useRef,
     useState,
 } from "react";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 export enum ConnectionState {
     Connecting,
@@ -32,29 +34,21 @@ export const DoorbellProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         ConnectionState.Connecting
     );
 
-    const ws = useRef<WebSocket | null>(null);
+    const ws = useRef<ReconnectingWebSocket | null>(null);
 
     useEffect(() => {
-        ws.current = new WebSocket("wss://api.purduehackers.com/doorbell");
+        ws.current = new ReconnectingWebSocket(
+            "wss://api.purduehackers.com/doorbell"
+        );
 
         ws.current.onopen = () => setConnectionState(ConnectionState.Connected);
         ws.current.onclose = () => {
             setConnectionState(ConnectionState.Connecting);
-
-            // TODO: RECONNECT
         };
         ws.current.onerror = () => {
             setConnectionState(ConnectionState.Error);
-
-            // TODO: RECONNECT
         };
-
-        const wsCurrent = ws.current;
-
-        return () => {
-            wsCurrent.close();
-        };
-    }, []);
+    });
 
     useEffect(() => {
         if (!ws.current) return;

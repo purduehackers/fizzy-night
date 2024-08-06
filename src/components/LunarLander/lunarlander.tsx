@@ -53,7 +53,10 @@ let font: Font;
 
 const dashboard_sketch: Sketch = (p5: P5CanvasInstance) => {
     p5.setup = () => {
-        parent_canvas = p5.createCanvas((window.innerWidth / 2) - 32, window.innerHeight - 356);
+        parent_canvas = p5.createCanvas(
+            window.innerWidth / 2 - 32,
+            window.innerHeight - 356
+        );
 
         if (socket) {
             socket.disconnect();
@@ -89,10 +92,9 @@ const dashboard_sketch: Sketch = (p5: P5CanvasInstance) => {
         font = p5.loadFont(font_path);
     };
 
-
     p5.windowResized = () => {
-        p5.resizeCanvas((window.innerWidth / 2) - 32, window.innerHeight - 356);
-    }
+        p5.resizeCanvas(window.innerWidth / 2 - 32, window.innerHeight - 356);
+    };
 
     p5.draw = () => {
         p5.background(0);
@@ -150,7 +152,7 @@ const client_sketch: Sketch = (p5: P5CanvasInstance) => {
             socket.disconnect();
         }
 
-        socket = io(server_url, {secure:true});
+        socket = io(server_url, { secure: true });
 
         console.log("socket startup!");
 
@@ -198,7 +200,7 @@ const client_sketch: Sketch = (p5: P5CanvasInstance) => {
 
     p5.windowResized = () => {
         p5.resizeCanvas(window.innerWidth, window.innerHeight);
-    }
+    };
 
     p5.draw = () => {
         p5.background(0);
@@ -246,21 +248,21 @@ const client_sketch: Sketch = (p5: P5CanvasInstance) => {
         let found_ct = false;
 
         for (let touch of p5.touches as any[]) {
-            if (touch.x < (p5.width / 3)) found_lt = true;
-            else if (touch.x < (p5.width * 2 / 3)) found_ct = true;
+            if (touch.x < p5.width / 3) found_lt = true;
+            else if (touch.x < (p5.width * 2) / 3) found_ct = true;
             else found_rt = true;
         }
 
         if (p5.keyIsDown(p5.LEFT_ARROW) || found_lt) {
             final_vr += -1;
         }
-        
+
         if (p5.keyIsDown(p5.RIGHT_ARROW) || found_rt) {
             final_vr += 1;
         }
 
         my_lander.vr = final_vr;
-        
+
         if (p5.keyIsDown(p5.UP_ARROW) || found_ct) {
             my_lander.t = 1;
         } else {
@@ -319,13 +321,24 @@ const client_sketch: Sketch = (p5: P5CanvasInstance) => {
                 delete crashes[i];
             }
         }
-        
-        drawStats(p5, camera_data, my_lander, current_game_stage, endgame_timer);
+
+        drawStats(
+            p5,
+            camera_data,
+            my_lander,
+            current_game_stage,
+            endgame_timer
+        );
     };
 };
 
 export const LunarLander: FC = () => {
-    return <NextReactP5Wrapper id="lunar_lander_container" sketch={dashboard_sketch} />;
+    return (
+        <NextReactP5Wrapper
+            id="lunar_lander_container"
+            sketch={dashboard_sketch}
+        />
+    );
 };
 
 export const LocalLunarLander: FC = () => {
@@ -348,9 +361,9 @@ export const DashboardLunarLander: FC = () => {
                 <h1 className={`text-white text-4xl self-end`}>
                     Play Lunar Lander <br />
                     <br />
-                    fizzynight.purduehackers
+                    night.purduehackers.com
                     <br />
-                    .com/lunarlander
+                    /lunarlander
                 </h1>
                 <img
                     className={`w-[200px] h-[200px] block`}

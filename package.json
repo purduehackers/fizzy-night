@@ -27,6 +27,7 @@
     "react-canvas-confetti": "^1.4.0",
     "react-dom": "^18",
     "react-fast-marquee": "^1.6.2",
+    "reconnecting-websocket": "^4.4.0",
     "simple-markdown": "^0.7.3",
     "socket.io-client": "^4.7.4",
     "swr": "^2.2.4",
