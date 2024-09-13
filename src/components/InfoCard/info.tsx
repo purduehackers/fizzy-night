@@ -1,19 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import { FC } from "react";
 
-export type InfoProps = {
+export const Info: FC<{
     title: string;
     tagline: string;
     taglineColour: string;
     version: string;
-};
-
-export const Info: FC<InfoProps> = ({
-    title,
-    tagline,
-    version,
-    taglineColour,
-}) => {
+}> = ({ title, tagline, version, taglineColour }) => {
     return (
         <div className={`h-full flex flex-row`}>
             <div className={`mb-8 mx-4`}>

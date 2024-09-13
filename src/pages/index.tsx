@@ -7,6 +7,7 @@ import { ClockNoSSR } from "@/components/Clock/clock";
 import { DiscordFeed } from "@/components/DiscordFeed/discordfeed";
 import { DashboardLunarLander } from "@/components/LunarLander/lunarlander";
 import { DoorbellProvider } from "@/components/Doorbell/doorbellContext";
+import { Schedule } from "@/components/Schedule/schedule";
 
 const MainPage: FC = () => {
     const [shootConfetti, setShootConfetti] = useState(false);
@@ -27,8 +28,15 @@ const MainPage: FC = () => {
                         className={`flex flex-row grow justify-stretch max-h-[calc(100vh-140px)]`}
                     >
                         {/* <DashboardLunarLander /> */}
-                        <div className="w-[50vw] p-4 overflow-hidden">
-
+                        <div className="flex flex-col w-[50vw] p-4 overflow-hidden">
+                            <Schedule />
+                            <div className="flex-grow flex items-center justify-center">
+                                <h1
+                                    className={`text-neutral-600 text-3xl mb-4 text-center`}
+                                >
+                                    Big things in the works, stay tuned...
+                                </h1>
+                            </div>
                         </div>
                         <DiscordFeed />
                     </div>
@@ -37,9 +45,9 @@ const MainPage: FC = () => {
                         <Spotify />
                         <Info
                             title={"HACK NIGHT"}
-                            tagline={"now stranded in the desert!"}
-                            taglineColour={"purple"}
-                            version={"5.1"}
+                            tagline={"checkpoint? i hardly know her!"}
+                            taglineColour={"blue"}
+                            version={"5.2"}
                         />
                     </div>
                 </div>

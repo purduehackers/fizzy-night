@@ -2,20 +2,18 @@ import { FC, useEffect, useState } from "react";
 import { useLightningTimeClock } from "@purduehackers/time/react";
 import dynamic from "next/dynamic";
 
-export type ClockProps = {
-    confettiCallback: () => void;
-};
-
 const midnightWarmupTime = "f~f~e|b";
 const midnight = "0~0~0|0";
 const midnightCooldownTime = "0~0~0|5";
 
 const midnightPartyStates = [
     "bottom-0",
-    "bottom-1/2 translate-y-1/2 scale-[2.5]"
-]
+    "bottom-1/2 translate-y-1/2 scale-[2.5]",
+];
 
-export const Clock: FC<ClockProps> = ({ confettiCallback }) => {
+export const Clock: FC<{
+    confettiCallback: () => void;
+}> = ({ confettiCallback }) => {
     const { lightningTimeClock, timeColors, normalTimeClock } =
         useLightningTimeClock();
 
@@ -32,7 +30,12 @@ export const Clock: FC<ClockProps> = ({ confettiCallback }) => {
             setStartMidnightParty(false);
             setDidWeParty(false);
         }
-    }, [lightningTimeClock, confettiCallback, setStartMidnightParty, didWeParty]);
+    }, [
+        lightningTimeClock,
+        confettiCallback,
+        setStartMidnightParty,
+        didWeParty,
+    ]);
 
     return (
         <div
@@ -52,11 +55,17 @@ export const Clock: FC<ClockProps> = ({ confettiCallback }) => {
                     background: `linear-gradient(120deg, ${timeColors.boltColor} 0%, ${timeColors.zapColor} 50%, ${timeColors.sparkColor} 100%)`,
                 }}
             >
-                <div className={`w-full h-full rounded-[19px] bg-black flex flex-col text-center py-2 px-8`}>
-                    <h1 className={`my-auto text-6xl font-bold italic text-ph-yellow`}>
+                <div
+                    className={`w-full h-full rounded-[19px] bg-black flex flex-col text-center py-2 px-8`}
+                >
+                    <h1
+                        className={`my-auto text-6xl font-bold italic text-ph-yellow`}
+                    >
                         {lightningTimeClock}
                     </h1>
-                    <h1 className={`my-auto text-white text-xl font-bold italic`}>
+                    <h1
+                        className={`my-auto text-white text-xl font-bold italic`}
+                    >
                         ({normalTimeClock})
                     </h1>
                 </div>
@@ -66,4 +75,4 @@ export const Clock: FC<ClockProps> = ({ confettiCallback }) => {
 };
 
 // sadly page loading requires that we disable SSR for this element or Next gets sad
-export const ClockNoSSR = dynamic(() => Promise.resolve(Clock), { ssr: false })
+export const ClockNoSSR = dynamic(() => Promise.resolve(Clock), { ssr: false });
