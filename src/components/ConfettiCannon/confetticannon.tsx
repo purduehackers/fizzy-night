@@ -2,17 +2,14 @@ import { FC, useEffect } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
 import useSound from "use-sound";
 
-export type ConfettiCannonProps = {
+export const ConfettiCannon: FC<{
     shootConfetti: boolean;
-};
-
-export const ConfettiCannon: FC<ConfettiCannonProps> = ({ shootConfetti }) => {
+}> = ({ shootConfetti }) => {
     const [play] = useSound("/party-horn.mp3");
 
     useEffect(() => {
-        if (shootConfetti)
-            play();
-    }, [shootConfetti, play])
+        if (shootConfetti) play();
+    }, [shootConfetti, play]);
 
     return (
         <>
