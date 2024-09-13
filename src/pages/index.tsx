@@ -26,7 +26,10 @@ const MainPage: FC = () => {
                     <div
                         className={`flex flex-row grow justify-stretch max-h-[calc(100vh-140px)]`}
                     >
-                        <DashboardLunarLander />
+                        {/* <DashboardLunarLander /> */}
+                        <div className="w-[50vw] p-4 overflow-hidden">
+
+                        </div>
                         <DiscordFeed />
                     </div>
 

@@ -22,7 +22,7 @@ export const Spotify: FC<FooterProps> = ({}) => {
     });
 
     return (
-        <div className={`h-full flex flex-row`}>
+        <div className={`h-full flex flex-row opacity-0`}>
             <div className={`h-full pb-4 pl-4`}>
                 <div className={`h-full p-[6px]`}>
                     <img
