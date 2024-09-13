@@ -229,18 +229,18 @@ export const Schedule: FC = () => {
 
         setSecondsOffset(
             -SecondsToOffsetCenter(
-                // WeeklyDateToSeconds({
-                //     day: now.getDay(),
-                //     hour: now.getHours(),
-                //     minute: now.getMinutes(),
-                //     second: now.getSeconds(),
-                // }),
                 WeeklyDateToSeconds({
-                    day: Day.Friday,
-                    hour: 23,
-                    minute: 0,
-                    second: 0,
+                    day: now.getDay(),
+                    hour: now.getHours(),
+                    minute: now.getMinutes(),
+                    second: now.getSeconds(),
                 }),
+                // WeeklyDateToSeconds({
+                //     day: Day.Friday,
+                //     hour: 23,
+                //     minute: 0,
+                //     second: 0,
+                // }),
                 scheduleContainerRef
             )
         );
