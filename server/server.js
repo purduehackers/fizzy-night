@@ -17,14 +17,38 @@ client.on("ready", () => {
 
 client.on("messageCreate", async (message) => {
     try {
+        const channel = message.channel,
+        guild = channel.guild,
+        everyone = guild.roles.everyone;
+        
+        if (!channel.permissionsFor(everyone).has(PermissionsBitField.Flags.ViewChannel))
+            return;
+
+        if (message.mentions.users.size) {
+            message.mentions.users.forEach(async user => {
+                let userNickname = (await message.guild.members.fetch(user.id)).nickname;
+                console.log(`User mentioned: ${userNickname}`); // user.displayName = Global Display Name 
+            });
+        }
+
+        // Check if the message mentions any roles
+        if (message.mentions.roles.size) {
+            message.mentions.roles.forEach(role => {
+                console.log(`Role mentioned: ${role.name}`);
+            });
+        }
+
+
+
         const sql_client = await createClient({
             connectionString:
                 process.env.VERCEL_PGSQL,
         });
-    
+
         await sql_client.connect();
 
         sql_client.query({
+            // Note: All of these are apparently VARCHAR, except the last one is a BIGINT
             text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid) VALUES ($1, $2, $3, $4, $5, $6, $7);`,
             values: [
                 message.author.displayName,
@@ -40,9 +64,88 @@ client.on("messageCreate", async (message) => {
                 message.guildId ?? null,
             ],
         }).then(() => {
-            sql_client.end();
-        });
-    } catch (e) {}
+        });//.catch(() => {});
+
+        // Add Users to list
+        if (message.mentions.users.size) {
+            message.mentions.users.forEach(async user => {
+                let userData = (await message.guild.members.fetch(user.id))
+                const sql_user_client = await createClient({
+                    connectionString:
+                        process.env.VERCEL_PGSQL,
+                });
+
+                await sql_user_client.connect();
+                // Add Users to list
+                sql_user_client.query({
+                    // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
+                    // ALTER TABLE USERS ADD PRIMARY KEY (id);
+                    text: `insert into users (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
+                    values: [
+                        userData.id,
+                        userData.nickname ?? userData.user.globalName,
+                        userData.displayColor ?? 0
+                    ],
+                }).then(() => {
+                    sql_user_client.end();
+                });//.catch(() => {});
+            });
+        }
+
+        // Add Roles to list
+        if (message.mentions.roles.size) {
+            message.mentions.roles.forEach(async role => {
+                let roleData = (await message.guild.roles.fetch(role.id))
+                const sql_role_client = await createClient({
+                    connectionString:
+                        process.env.VERCEL_PGSQL,
+                });
+
+                await sql_role_client.connect();
+                // Add Roles to list
+                sql_role_client.query({
+                    // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
+                    // ALTER TABLE ROLES ADD PRIMARY KEY (id);
+                    text: `insert into roles (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT DO UPDATE;`,
+                    values: [
+                        roleData.id,
+                        roleData.name,
+                        roleData.color
+                    ],
+                }).then(() => {
+                    sql_role_client.end();
+                });//.catch(() => {});
+            });
+        }
+
+
+        // Check if the message mentions any channels
+        if (message.mentions.channels.size) {
+            message.mentions.channels.forEach(async channel => {
+                let channelData = (await message.guild.channels.fetch(channel.id))
+                const sql_channel_client = await createClient({
+                    connectionString:
+                        process.env.VERCEL_PGSQL,
+                });
+
+                await sql_channel_client.connect();
+                // Add Channels to list
+                sql_channel_client.query({
+                    // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
+                    // ALTER TABLE CHANNELS ADD PRIMARY KEY (id);
+                    text: `insert into channels (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT DO UPDATE;`,
+                    values: [
+                        channelData.id,
+                        channelData.name,
+                        0
+                    ],
+                }).then(() => {
+                    sql_channel_client.end();
+                });//.catch(() => {});
+            });
+        }
+
+    } catch (e) { }
     //await sql`delete from messages where ctid in (select ctid from messages order by time limit 1)`
 });
 
@@ -118,7 +221,7 @@ setInterval(() => {
 }, 100);
 
 io.on("connection", (socket) => {
-    socket.data.colour = [ Math.random() * 255.0, Math.random() * 255.0, Math.random() * 255.0 ];
+    socket.data.colour = [Math.random() * 255.0, Math.random() * 255.0, Math.random() * 255.0];
 
     socket.emit("pl_map_change", current_map_seed);
     socket.emit("pl_game_stage", current_game_stage);
@@ -185,10 +288,10 @@ const computeLanderPhysics = (lander) => {
     lander.y += lander.vy * deltaTime;
     lander.r += lander.vr * deltaTime;
     lander.vx += Math.sin(lander.r) * lander.t * thrust_power * deltaTime;
-    lander.vy += (Math.cos(lander.r) * lander.t * thrust_power * deltaTime) - (gravity  * deltaTime);
-    
+    lander.vy += (Math.cos(lander.r) * lander.t * thrust_power * deltaTime) - (gravity * deltaTime);
+
     if (lander.x > mapWidth) lander.x -= mapWidth;
     if (lander.x < 0) lander.x += mapWidth;
-    
+
     return lander;
 }

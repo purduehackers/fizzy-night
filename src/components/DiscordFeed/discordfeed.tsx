@@ -4,15 +4,42 @@ import useSWR from "swr";
 import { parse } from "discord-markdown-parser";
 import { SingleASTNode } from "simple-markdown";
 
+export type Message = {
+    authorname: string;
+    authorimage: string;
+    content: string;
+    channel: string;
+    time: string;
+    uuid: string;
+    guildid: string;
+};
+export type IdNameColour = {
+    id: number;
+    name: string;
+    colour: number;
+};
+
 export const DiscordFeed: FC = () => {
     //@ts-ignore
     const fetcher = (...args) => fetch(...args).then((res) => res.json());
-    const { data } = useSWR("/api/fetch-posts", fetcher, {
+    const { data: messageData } = useSWR("/api/fetch-posts", fetcher, {
+        fallbackData: [],
+        refreshInterval: 5000,
+    });
+    const { data: userData } = useSWR("/api/fetch-users", fetcher, {
+        fallbackData: [],
+        refreshInterval: 5000,
+    });
+    const { data: roleData } = useSWR("/api/fetch-roles", fetcher, {
+        fallbackData: [],
+        refreshInterval: 5000,
+    });
+    const { data: channelData } = useSWR("/api/fetch-channels", fetcher, {
         fallbackData: [],
         refreshInterval: 5000,
     });
 
-    const messages = data as DiscordMessageProps[];
+    const messages = messageData as Message[];
 
     return (
         <div className={`w-[50vw] p-4 overflow-hidden`}>
@@ -20,7 +47,7 @@ export const DiscordFeed: FC = () => {
                 Live Discord Stream
             </h1>
             {messages.map((message, i) => (
-                <DiscordMessage key={message.uuid} {...message} />
+                <DiscordMessage key={message.uuid} message={message} userData={userData ?? []} roleData={roleData ?? []} channelData={channelData ?? []} />
             ))}
             <h1 className={`text-neutral-600 text-3xl mb-4 text-center`}>
                 Post more to make
@@ -31,23 +58,16 @@ export const DiscordFeed: FC = () => {
     );
 };
 
-export type DiscordMessageProps = {
-    authorname: string;
-    authorimage: string;
-    content: string;
-    channel: string;
-    time: string;
-    uuid: string;
-    guildid: string;
-};
-
-export const DiscordMessage: FC<DiscordMessageProps> = ({
-    authorname,
-    authorimage,
-    content,
-    channel,
-    time,
-    guildid,
+export const DiscordMessage: FC<{
+    message: Message;
+    userData: IdNameColour[];
+    roleData: IdNameColour[];
+    channelData: IdNameColour[];
+}> = ({
+    message,
+    userData,
+    roleData,
+    channelData
 }) => {
     return (
         <div
@@ -63,29 +83,29 @@ export const DiscordMessage: FC<DiscordMessageProps> = ({
         >
             <h1 className={`mb-4`}>
                 <img
-                    src={authorimage}
+                    src={message.authorimage}
                     className={`inline-block
                                 w-[64px]
                                 h-[64px]
                                 mr-4
                                 object-cover
                                 rounded-full`}
-                    alt={`${authorname}'s Profile Picture`}
+                    alt={`${message.authorname}'s Profile Picture`}
                 />
                 <span className={`text-white text-xl align-middle`}>
-                    {authorname}
+                    {message.authorname}
                 </span>
 
                 <div className={`inline-block ml-4 align-middle`}>
                     <span className={`text-neutral-400 text-xl`}>
-                        #{channel}
+                        #{message.channel}
                         <br />
-                        {time}
+                        {message.time}
                     </span>
                 </div>
             </h1>
             <h1 className={`text-white text-xl break-all`}>
-                <ParseDiscordMessage message={content} guildid={guildid} />
+                <ParseDiscordMessage message={message.content} guildid={message.guildid} userData={userData} roleData={roleData} channelData={channelData} />
             </h1>
         </div>
     );
@@ -140,94 +160,46 @@ export const DiscordMessage: FC<DiscordMessageProps> = ({
 //     return messageParts;
 // }
 
-export type GuildUser = {
-    user: DiscordUser;
-    nick?: string;
-    avatar?: string;
-    roles: number[];
-    joined_at: string;
-    premium_since?: string;
-    deaf: boolean;
-    mute: boolean;
-    flags: number;
-    pending?: boolean;
-    permissions: string;
-    communication_disabled_until?: string;
+export type MentionList = [
+    name: string,
+    color: string
+];
+
+const ERROR_USER: IdNameColour = {
+    id: 0,
+    name: "Unknown User",
+    colour: 0
 };
 
-export type DiscordUser = {
-    id: number;
-    username: string;
-    discriminator: string;
-    global_name?: string;
-    avatar?: string;
-    bot?: boolean;
-    system?: boolean;
-    mfa_enabled?: boolean;
-    banner?: string;
-    accent_color?: string;
-    locale?: string;
-    verified?: boolean;
-    email?: string;
-    flags?: number;
-    premium_type?: number;
-    public_flags?: number;
-    avatar_decoration?: string;
-};
+const ERROR_CHANNEL: IdNameColour = {
+    id: 0,
+    name: "Unknown Channel",
+    colour: 0
+}
 
-const ERROR_USER: GuildUser = {
-    user: {
-        id: -1,
-        username: "unknownuser",
-        discriminator: "0000",
-        global_name: "Unknown User",
-    },
-    nick: "Unknown User",
-    roles: [],
-    joined_at: "",
-    deaf: false,
-    mute: false,
-    flags: 0,
-    permissions: "string",
-};
-
-export type GuildRole = {
-    id: number;
-    name: string;
-    color: number;
-    hoist: boolean;
-    icon?: string;
-    unicode_emoji?: string;
-    position: number;
-    permissions: string;
-    managed: boolean;
-    mentionable: boolean;
-    flags: number;
-};
-
-const ERROR_ROLE: GuildRole = {
-    id: -1,
+const ERROR_ROLE: IdNameColour = {
+    id: 0,
     name: "Unknown Role",
-    color: 0,
-    hoist: false,
-    position: -1,
-    permissions: "",
-    managed: false,
-    mentionable: true,
-    flags: 0,
+    colour: 0,
 };
 
-export const ParseDiscordMessage: FC<{ message: string; guildid: string }> = ({
+export const ParseDiscordMessage: FC<{ 
+    message: string;
+    guildid: string;
+    userData: IdNameColour[];
+    roleData: IdNameColour[];
+    channelData: IdNameColour[];
+}> = ({
     message,
     guildid,
+    userData,
+    roleData,
+    channelData
 }) => {
     //const parsed: SingleASTNode[] = parse(message, 'extended');
     //console.log(message)
     const parsed: SingleASTNode[] = parse(message, "extended");
     //console.log(parsed)
-
-    let serverUsers: GuildUser[] = [];
-    let serverRoles: GuildRole[] = [];
 
     if (guildid) {
         // fuck you CORS
@@ -266,26 +238,26 @@ export const ParseDiscordMessage: FC<{ message: string; guildid: string }> = ({
         <GenerateMessageHTML
             key={index}
             node={value}
-            users={serverUsers}
-            roles={serverRoles}
+            userData={userData}
+            roleData={roleData}
+            channelData={channelData}
         />
     ));
 };
 
 export const GenerateMessageHTML: FC<{
     node: SingleASTNode;
-    users: GuildUser[];
-    roles: GuildRole[];
-}> = ({ node, users, roles }) => {
+    userData: IdNameColour[];
+    roleData: IdNameColour[];
+    channelData: IdNameColour[];
+}> = ({ node, userData, roleData, channelData }) => {
     let content = node.content;
 
     if (Array.isArray(node.content)) {
         content = node.content.map((value, index) => (
             <GenerateMessageHTML
                 key={index}
-                node={value}
-                users={users}
-                roles={roles}
+                node={value} userData={userData} roleData={roleData} channelData={channelData}                
             />
         ));
     }
@@ -362,45 +334,53 @@ export const GenerateMessageHTML: FC<{
                 </span>
             );
         case "user":
-            //const targetUser = users.find((x) => x == node.id) ?? ERROR_USER;
-            //const name = (targetUser.nick ?? targetUser.user.global_name) ?? targetUser.user.username;
-
-            const targetUserColors = DiscordColorToCssColors(0); //targetUser.roles[0] ?? 0);
+            console.log(userData)
+            const targetUser = userData.find((x) => x.id == node.id) ?? ERROR_USER;
+            console.log(targetUser)
+            const targetUserColours = DiscordColorToCssColors(targetUser.colour ?? 0);
 
             return (
                 <span
                     className={`border-[1px] px-[4px] rounded-md`}
                     style={{
-                        borderColor: targetUserColors.bg,
-                        backgroundColor: targetUserColors.bg,
-                        color: targetUserColors.fg,
+                        borderColor: targetUserColours.bg,
+                        backgroundColor: targetUserColours.bg,
+                        color: targetUserColours.fg,
                     }}
                 >
-                    <strong>@Unknown User</strong>
+                    <strong>@{targetUser.name}</strong>
                 </span>
             );
         case "channel":
+            const targetChannel = channelData.find((x) => x.id == node.id) ?? ERROR_CHANNEL;
+            const targetChannelColours = DiscordColorToCssColors(targetChannel.colour ?? 0);
+
             return (
                 <span
                     className={`px-[4px] rounded-md bg-blue-950 text-blue-200`}
+                    style={{
+                        borderColor: targetChannelColours.bg,
+                        backgroundColor: targetChannelColours.bg,
+                        color: targetChannelColours.fg,
+                    }}
                 >
-                    <strong>#Unknown Channel</strong>
+                    <strong>#{targetChannel.name}</strong>
                 </span>
             );
         case "role":
-            //const targetRole = roles.find((x) => x == node.id) ?? ERROR_ROLE;
-            const targetRoleColors = DiscordColorToCssColors(0); //targetRole.color);
+            const targetRole = roleData.find((x) => x.id == node.id) ?? ERROR_ROLE;
+            const targetRoleColours = DiscordColorToCssColors(targetRole.colour ?? 0);
 
             return (
                 <span
                     className={`border-[1px] px-[4px] rounded-md`}
                     style={{
-                        borderColor: targetRoleColors.bg,
-                        backgroundColor: targetRoleColors.bg,
-                        color: targetRoleColors.fg,
+                        borderColor: targetRoleColours.bg,
+                        backgroundColor: targetRoleColours.bg,
+                        color: targetRoleColours.fg,
                     }}
                 >
-                    <strong>@Unknown Role</strong>
+                    <strong>@{targetRole.name}</strong>
                 </span>
             );
         case "emoji":
