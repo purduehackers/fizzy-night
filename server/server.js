@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, GatewayIntentBits, PermissionsBitField } from "discord.js";
 import { createClient } from "@vercel/postgres";
 import { Server } from "socket.io";
 import 'dotenv/config';
@@ -18,27 +18,11 @@ client.on("ready", () => {
 client.on("messageCreate", async (message) => {
     try {
         const channel = message.channel,
-        guild = channel.guild,
-        everyone = guild.roles.everyone;
+            guild = channel.guild,
+            everyone = guild.roles.everyone;
         
         if (!channel.permissionsFor(everyone).has(PermissionsBitField.Flags.ViewChannel))
             return;
-
-        if (message.mentions.users.size) {
-            message.mentions.users.forEach(async user => {
-                let userNickname = (await message.guild.members.fetch(user.id)).nickname;
-                console.log(`User mentioned: ${userNickname}`); // user.displayName = Global Display Name 
-            });
-        }
-
-        // Check if the message mentions any roles
-        if (message.mentions.roles.size) {
-            message.mentions.roles.forEach(role => {
-                console.log(`Role mentioned: ${role.name}`);
-            });
-        }
-
-
 
         const sql_client = await createClient({
             connectionString:
@@ -47,11 +31,12 @@ client.on("messageCreate", async (message) => {
 
         await sql_client.connect();
 
+        let authorData = (await message.guild.members.fetch(message.author.id))
         sql_client.query({
             // Note: All of these are apparently VARCHAR, except the last one is a BIGINT
             text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid) VALUES ($1, $2, $3, $4, $5, $6, $7);`,
             values: [
-                message.author.displayName,
+                authorData.nickname ?? authorData.user.globalName ?? authorData.user.username,
                 message.author.displayAvatarURL(),
                 message.content.replace(/'+/gim, ""),
                 message.channel.name,
@@ -64,7 +49,7 @@ client.on("messageCreate", async (message) => {
                 message.guildId ?? null,
             ],
         }).then(() => {
-        });//.catch(() => {});
+        }).catch(() => {});
 
         // Add Users to list
         if (message.mentions.users.size) {
@@ -83,12 +68,12 @@ client.on("messageCreate", async (message) => {
                     text: `insert into users (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
                     values: [
                         userData.id,
-                        userData.nickname ?? userData.user.globalName,
+                        userData.nickname ?? userData.user.globalName ?? userData.user.username,
                         userData.displayColor ?? 0
                     ],
                 }).then(() => {
                     sql_user_client.end();
-                });//.catch(() => {});
+                }).catch(() => {});
             });
         }
 
@@ -106,7 +91,7 @@ client.on("messageCreate", async (message) => {
                 sql_role_client.query({
                     // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
                     // ALTER TABLE ROLES ADD PRIMARY KEY (id);
-                    text: `insert into roles (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT DO UPDATE;`,
+                    text: `insert into roles (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
                     values: [
                         roleData.id,
                         roleData.name,
@@ -114,7 +99,7 @@ client.on("messageCreate", async (message) => {
                     ],
                 }).then(() => {
                     sql_role_client.end();
-                });//.catch(() => {});
+                }).catch(() => {});
             });
         }
 
@@ -133,7 +118,7 @@ client.on("messageCreate", async (message) => {
                 sql_channel_client.query({
                     // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
                     // ALTER TABLE CHANNELS ADD PRIMARY KEY (id);
-                    text: `insert into channels (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT DO UPDATE;`,
+                    text: `insert into channels (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
                     values: [
                         channelData.id,
                         channelData.name,
@@ -141,7 +126,7 @@ client.on("messageCreate", async (message) => {
                     ],
                 }).then(() => {
                     sql_channel_client.end();
-                });//.catch(() => {});
+                }).catch(() => {});
             });
         }
 

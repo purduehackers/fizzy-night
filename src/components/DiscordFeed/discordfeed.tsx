@@ -334,9 +334,7 @@ export const GenerateMessageHTML: FC<{
                 </span>
             );
         case "user":
-            console.log(userData)
             const targetUser = userData.find((x) => x.id == node.id) ?? ERROR_USER;
-            console.log(targetUser)
             const targetUserColours = DiscordColorToCssColors(targetUser.colour ?? 0);
 
             return (
