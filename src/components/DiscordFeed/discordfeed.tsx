@@ -173,7 +173,7 @@ const ERROR_USER: IdNameColour = {
 
 const ERROR_CHANNEL: IdNameColour = {
     id: 0,
-    name: "Unknown Chanel",
+    name: "Unknown Channel",
     colour: 0
 }
 
