@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { FC } from "react";
+import { FC, Key } from "react";
 import useSWR from "swr";
 import { parse } from "discord-markdown-parser";
 import { SingleASTNode } from "simple-markdown";
@@ -222,7 +222,7 @@ export const GenerateMessageHTML: FC<{
     let content = node.content;
 
     if (Array.isArray(node.content)) {
-        content = node.content.map((value, index) => (
+        content = node.content.map((value: any, index: Key | null | undefined) => (
             <GenerateMessageHTML
                 key={index}
                 node={value} userData={userData} roleData={roleData} channelData={channelData}                
@@ -265,7 +265,7 @@ export const GenerateMessageHTML: FC<{
         case "autolink":
             return <>unimplemented markdown: autolink</>;
         case "url":
-            content = node.content.map((value, index) => {
+            content = node.content.map((value: { content: string; }, index: Key | null | undefined) => {
 
                 // Tenor is ***not*** supported right now, due to complexity in their service.
                 // Unfortunatly that disqualifies most of the Discord GIF selector.
