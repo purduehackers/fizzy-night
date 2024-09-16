@@ -20,7 +20,7 @@ client.on("messageCreate", async (message) => {
         const channel = message.channel,
             guild = channel.guild,
             everyone = guild.roles.everyone;
-        
+
         if (!channel.permissionsFor(everyone).has(PermissionsBitField.Flags.ViewChannel))
             return;
 
@@ -32,9 +32,19 @@ client.on("messageCreate", async (message) => {
         await sql_client.connect();
 
         let authorData = (await message.guild.members.fetch(message.author.id))
+
+        let attachmentIds = null;
+        message.attachments.forEach(async attachments => {
+            if (attachmentIds == null) {
+                attachmentIds = [];
+            }
+            attachmentIds.push(attachments.id)
+        })
+
         sql_client.query({
-            // Note: All of these are apparently VARCHAR, except the last one is a BIGINT
-            text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid) VALUES ($1, $2, $3, $4, $5, $6, $7);`,
+            // Schema: VARCHAR(255), VARCHAR(255), VARCHAR(4000), VARCHAR(255), VARCHAR(255), VARCHAR(255), BIGINT, VARCHAR(255), VARCHAR(4000)
+            // ALTER TABLE messages ADD COLUMN attachments VARCHAR(4000);
+            text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid, userid, attachments) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
             values: [
                 authorData.nickname ?? authorData.user.globalName ?? authorData.user.username,
                 message.author.displayAvatarURL(),
@@ -47,9 +57,10 @@ client.on("messageCreate", async (message) => {
                 }),
                 message.id,
                 message.guildId ?? null,
+                attachmentIds,
             ],
         }).then(() => {
-        }).catch(() => {});
+        }).catch(() => { });
 
         // Add Users to list
         if (message.mentions.users.size) {
@@ -73,7 +84,7 @@ client.on("messageCreate", async (message) => {
                     ],
                 }).then(() => {
                     sql_user_client.end();
-                }).catch(() => {});
+                }).catch(() => { });
             });
         }
 
@@ -99,7 +110,7 @@ client.on("messageCreate", async (message) => {
                     ],
                 }).then(() => {
                     sql_role_client.end();
-                }).catch(() => {});
+                }).catch(() => { });
             });
         }
 
@@ -126,9 +137,38 @@ client.on("messageCreate", async (message) => {
                     ],
                 }).then(() => {
                     sql_channel_client.end();
-                }).catch(() => {});
+                }).catch(() => { });
             });
         }
+
+        // Check if the message has any attachments
+        if (message.attachments.size) {
+            message.attachments.forEach(async attachments => {
+
+                const sql_attachment_client = await createClient({
+                    connectionString:
+                        process.env.VERCEL_PGSQL,
+                });
+
+                await sql_attachment_client.connect();
+                // Add attachments to list
+                sql_attachment_client.query({
+                    // Note: BIGINT, VARCHAR(1000), VARCHAR(255) <= Your schema
+                    // CREATE TABLE attachments(id BIGINT, name VARCHAR(255), link VARCHAR(1000), type VARCHAR(255));
+                    // ALTER TABLE CHANNELS ADD PRIMARY KEY (id);
+                    text: `insert into attachments (id, link, type, name) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO UPDATE SET id = $1, link = $2, type = $3, name = $4;`,
+                    values: [
+                        attachments.id,
+                        attachments.proxyURL,
+                        attachments.contentType,
+                        attachments.name
+                    ],
+                }).then(() => {
+                    sql_attachment_client.end();
+                }).catch((e) => { console.log(e) });
+            });
+        }
+
 
     } catch (e) { }
     //await sql`delete from messages where ctid in (select ctid from messages order by time limit 1)`

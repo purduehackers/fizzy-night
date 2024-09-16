@@ -3,6 +3,7 @@ import { FC } from "react";
 import useSWR from "swr";
 import { parse } from "discord-markdown-parser";
 import { SingleASTNode } from "simple-markdown";
+import { CameraOutlined, PaperClipOutlined } from "@ant-design/icons";
 
 export type Message = {
     authorname: string;
@@ -12,11 +13,18 @@ export type Message = {
     time: string;
     uuid: string;
     guildid: string;
+    attachments: string;
 };
 export type IdNameColour = {
     id: number;
     name: string;
     colour: number;
+};
+export type AttachmentData = {
+    id: number;
+    name: string;
+    link: string;
+    type: string;
 };
 
 export const DiscordFeed: FC = () => {
@@ -38,6 +46,10 @@ export const DiscordFeed: FC = () => {
         fallbackData: [],
         refreshInterval: 5000,
     });
+    const { data: attachmentData } = useSWR("/api/fetch-attachments", fetcher, {
+        fallbackData: [],
+        refreshInterval: 5000,
+    });
 
     const messages = messageData as Message[];
 
@@ -47,7 +59,7 @@ export const DiscordFeed: FC = () => {
                 Live Discord Stream
             </h1>
             {messages.map((message, i) => (
-                <DiscordMessage key={message.uuid} message={message} userData={userData ?? []} roleData={roleData ?? []} channelData={channelData ?? []} />
+                <DiscordMessage key={message.uuid} message={message} userData={userData ?? []} roleData={roleData ?? []} channelData={channelData ?? []} attachmentData={attachmentData ?? []} />
             ))}
             <h1 className={`text-neutral-600 text-3xl mb-4 text-center`}>
                 Post more to make
@@ -63,11 +75,13 @@ export const DiscordMessage: FC<{
     userData: IdNameColour[];
     roleData: IdNameColour[];
     channelData: IdNameColour[];
+    attachmentData: AttachmentData[];
 }> = ({
     message,
     userData,
     roleData,
-    channelData
+    channelData,
+    attachmentData
 }) => {
     return (
         <div
@@ -105,60 +119,24 @@ export const DiscordMessage: FC<{
                 </div>
             </h1>
             <h1 className={`text-white text-xl break-all`}>
-                <ParseDiscordMessage message={message.content} guildid={message.guildid} userData={userData} roleData={roleData} channelData={channelData} />
-            </h1>
+                        <span className="inline-block">
+                    {message.content ? (
+                        <ParseDiscordMessage message={message.content} guildid={message.guildid} userData={userData} roleData={roleData} channelData={channelData} />
+                    ) : null}
+                    {message.content && message.attachments ? (
+                        <span>
+                            <br />
+                            <br />
+                        </span>
+                    ) : null}
+                    {message.attachments ? (
+                        <ParseDiscordAttachments messageAttachments={message.attachments} attachmentData={attachmentData} />
+                    ) : null}
+                    </span>
+                </h1>
         </div>
     );
 };
-
-// export const ParseDiscordMessage: FC<{message: string}> = ({ message }) => {
-//     let parsingString: string = message;
-
-//     let messageParts: JSX.Element[] = [];
-//     let nextTextPart: string = "";
-
-//     let keyIndex = 0;
-
-//     let pushLastTextPart = () => {
-//         if (nextTextPart == "")
-//             return;
-
-//         messageParts.push(
-//             <span key={keyIndex}>{nextTextPart}</span>
-//         )
-
-//         keyIndex++;
-//         nextTextPart = "";
-//     }
-
-//     while (parsingString.length > 0) {
-//         if (parsingString.match(/^(<:\w+:)(\d*)(>)/g)) { // emoji detected!!!
-//             pushLastTextPart();
-
-//             let emojiMatch = Array.from(parsingString.matchAll(/^<:\w*:(\d*)>/g), m => m[1]);
-//             messageParts.push(
-//                 <img key={keyIndex} width="28px" height="28px" className="inline-block" src={`https://cdn.discordapp.com/emojis/${emojiMatch[0]}.webp?size=128&quality=lossless`} alt={`Discord Emoji ${emojiMatch[0]}`}/>
-//             )
-//             keyIndex++;
-//             parsingString = parsingString.replace(/^<:\w*:(\d*)>/g, "");
-//         } else if (parsingString.match(/^(<a:\w+:)(\d*)(>)/g)) { // animated emoji detected!!!
-//             pushLastTextPart();
-
-//             let animatedEmojiMatch = Array.from(parsingString.matchAll(/^<a:\w*:(\d*)>/g), m => m[1]);
-//             messageParts.push(
-//                 <img key={keyIndex} width="28px" height="28px" className="inline-block" src={`https://cdn.discordapp.com/emojis/${animatedEmojiMatch[0]}.gif?size=128&quality=lossless`} alt={`Discord Emoji ${animatedEmojiMatch[0]}`}/>
-//             )
-//             keyIndex++;
-//             parsingString = parsingString.replace(/^<a:\w*:(\d*)>/g, "");
-//         } else {
-//             nextTextPart += parsingString[0];
-//             parsingString = parsingString.slice(1);
-//         }
-//     }
-//     pushLastTextPart();
-
-//     return messageParts;
-// }
 
 export type MentionList = [
     name: string,
@@ -183,6 +161,13 @@ const ERROR_ROLE: IdNameColour = {
     colour: 0,
 };
 
+const ERROR_ATTACHMENT: AttachmentData = {
+    id: 0,
+    name: "",
+    link: "",
+    type: ""
+};
+
 export const ParseDiscordMessage: FC<{ 
     message: string;
     guildid: string;
@@ -196,43 +181,7 @@ export const ParseDiscordMessage: FC<{
     roleData,
     channelData
 }) => {
-    //const parsed: SingleASTNode[] = parse(message, 'extended');
-    //console.log(message)
     const parsed: SingleASTNode[] = parse(message, "extended");
-    //console.log(parsed)
-
-    if (guildid) {
-        // fuck you CORS
-        // const usersResponse = await fetch(`http://discord.com/api/guilds/${guildid}/members`, {
-        //     method: "GET",
-        //     headers: {
-        //         Authorization: "Bot ****",
-        //         "Access-Control-Allow-Origin": "*"
-        //     },
-        //     mode: "cors",
-        //     cache: "no-cache",
-        //     credentials: "same-origin",
-        //     redirect: "follow",
-        //     referrerPolicy: "no-referrer",
-        // });
-        // serverUsers = await usersResponse.json() as GuildUser[];
-        // console.log(serverUsers)
-        // const rolesResponse = await fetch(`http://discord.com/api/guilds/${guildid}/roles`, {
-        //     method: "GET",
-        //     headers: {
-        //         Authorization: "Bot ****",
-        //         "Access-Control-Allow-Origin": "*"
-        //     },
-        //     mode: "cors",
-        //     cache: "no-cache",
-        //     credentials: "same-origin",
-        //     redirect: "follow",
-        //     referrerPolicy: "no-referrer",
-        // });
-        // serverRoles = await rolesResponse.json() as GuildRole[];
-        // console.log(serverRoles)
-        //get all users and roles from the server
-    }
 
     return parsed.map((value, index) => (
         <GenerateMessageHTML
@@ -244,6 +193,25 @@ export const ParseDiscordMessage: FC<{
         />
     ));
 };
+
+export const ParseDiscordAttachments: FC<{
+    messageAttachments: string;
+    attachmentData: AttachmentData[];
+}> = ({
+    messageAttachments,
+    attachmentData
+}) => {
+
+        let attachmentList = messageAttachments.slice(1, -1).replaceAll('"', '').split(",")
+
+        return attachmentList.map((attachmentId, index) => (
+            <GenerateAttachmentHTML
+                key={index}
+                attachmentId={attachmentId}
+                attachmentData={attachmentData}
+            />
+        ));
+    };
 
 export const GenerateMessageHTML: FC<{
     node: SingleASTNode;
@@ -297,8 +265,33 @@ export const GenerateMessageHTML: FC<{
         case "autolink":
             return <>unimplemented markdown: autolink</>;
         case "url":
-            return <a className={`text-sky-500 `}>{content}</a>;
-        case "em":
+            content = node.content.map((value, index) => {
+
+                // Tenor is ***not*** supported right now, due to complexity in their service.
+                // Unfortunatly that disqualifies most of the Discord GIF selector.
+                if (value.content.includes("https://tenor.com/view")) {
+                    return (
+                        <span>
+                            <PaperClipOutlined />
+                            <> </>
+                            <a className={`text-sky-500 `}>Tenor-GIF</a>
+                        </span>
+                    )
+                }
+
+                if (/\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(value.content.replace(/\?.*/, ''))) {
+                    return <GenerateAttachmentHTML
+                        attachmentId={"0"}
+                        attachmentData={[
+                            JSON.parse(`{ "id": "0", "name": "Linked Image", "link": "${value.content}", "type": "image/*"}`)
+                        ]}
+                    />
+                }
+
+                return <a className={`text-sky-500 `}>{content}</a>;
+            })
+
+            return <a>{content}</a>;        case "em":
             return <em>{content}</em>;
         case "strong":
             return <strong>{content}</strong>;
@@ -421,6 +414,63 @@ export const GenerateMessageHTML: FC<{
     }
 
     return <></>;
+};
+
+export const GenerateAttachmentHTML: FC<{
+    attachmentId: string;
+    attachmentData: AttachmentData[];
+}> = ({ attachmentId, attachmentData }) => {
+    const targetAttachment = attachmentData.find((x) => x.id == parseInt(attachmentId)) ?? ERROR_ATTACHMENT;
+
+    console.log(attachmentData)
+
+    if (targetAttachment.name != "") {
+        if (targetAttachment.name == "Linked Image") {
+            return (
+                <span className={``}>
+                    <img
+                        style={{ maxWidth: 150, maxHeight: 150 }}
+                        width="auto"
+                        height="auto"
+                        className="inline-block px-[2px] w-[auto] h-[auto]"
+                        src={`${targetAttachment.link}`}
+                        alt={`${targetAttachment.name}`}
+                    /><></>
+                </span>
+            );
+        } else if (targetAttachment.type.includes("image/")) {
+            return (
+                <span className={`px-[8px] `}>
+                    <CameraOutlined />
+                    <> </>
+                    <img
+                        style={{ maxWidth: 150, maxHeight: 150 }}
+                        width="auto"
+                        height="auto"
+                        className="inline-block px-[2px] w-[auto] h-[auto]"
+                        src={`${targetAttachment.link}`}
+                        alt={`${targetAttachment.name}`}
+                    /><></>
+                </span>
+            );
+        } else {
+
+            let attachmentName = targetAttachment.name
+            if (attachmentName.length >= 15) {
+                attachmentName = attachmentName.substring(0,12) + "...";
+            }
+
+            return (
+                <span className={`px-[8px]`}>
+                    <PaperClipOutlined />
+                    <> </>
+                    <a className={`text-sky-500 `} href={targetAttachment.link}>{attachmentName}</a><></>
+                </span>
+            );
+        }
+    }
+
+    return (<></>);
 };
 
 const DAYS_OF_WEEK = [
