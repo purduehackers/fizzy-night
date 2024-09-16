@@ -113,7 +113,7 @@ export const DiscordMessage: FC<{
                 <div className={`inline-block ml-4 align-middle`}>
                     <span className={`text-neutral-400 text-xl`}>
                         #{message.channel}
-                        <br />
+                        &ensp;
                         {message.time}
                     </span>
                 </div>
