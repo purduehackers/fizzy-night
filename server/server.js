@@ -28,7 +28,22 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
         // Pass message, true (Edited)
         await processDiscordMessage(newMessage, true);
     } catch (e) { }
-    //await sql`delete from messages where ctid in (select ctid from messages order by time limit 1)`
+});
+
+client.on("messageDelete", async (message) => {
+    try {
+        // Pass message, true (Edited)
+        await deleteDiscordMessage(message);
+    } catch (e) { console.log(e) }
+});
+
+client.on("messageDeleteBulk", async (messages) => {
+    try {
+        messages.forEach(async message => {
+            // Pass message, true (Edited)
+            await deleteDiscordMessage(message);
+        });
+    } catch (e) { }
 });
 
 client.login(
@@ -344,4 +359,23 @@ async function processDiscordMessage(message, edited) {
             }).catch((e) => { });
         });
     }
+}
+
+async function deleteDiscordMessage(message) {
+    // Drop message from table
+    const sql_client = await createClient({
+        connectionString:
+            process.env.VERCEL_PGSQL,
+    });
+
+    await sql_client.connect();
+    // Delete message
+    sql_client.query({
+        text: `delete from messages where uuid = $1;`,
+        values: [
+            message.id
+        ],
+    }).then(() => {
+        sql_client.end();
+    }).catch((e) => { console.log(e) });
 }
