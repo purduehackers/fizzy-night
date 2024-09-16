@@ -280,18 +280,26 @@ export const GenerateMessageHTML: FC<{
                 }
 
                 if (/\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(value.content.replace(/\?.*/, ''))) {
-                    return <GenerateAttachmentHTML
-                        attachmentId={"0"}
-                        attachmentData={[
-                            JSON.parse(`{ "id": "0", "name": "Linked Image", "link": "${value.content}", "type": "image/*"}`)
-                        ]}
-                    />
+                    return (
+                        <span>
+                            <CameraOutlined />
+                            <a className={`text-sky-500 px-[4px]`}>{value.content.replace(/[^/]*\/\/(?:[^@]*@)?([^:/]+(?:\.[^:/]+)*).*/, '$1')}</a>
+                            <br />
+                            <GenerateAttachmentHTML
+                                attachmentId={"0"}
+                                attachmentData={[
+                                    JSON.parse(`{ "id": "0", "name": "Linked Image", "link": "${value.content}", "type": "image/*"}`)
+                                ]}
+                            />
+                        </span>
+                    )
                 }
 
                 return <a className={`text-sky-500 `}>{content}</a>;
             })
 
-            return <a>{content}</a>;        case "em":
+            return <a>{content}</a>;      
+        case "em":
             return <em>{content}</em>;
         case "strong":
             return <strong>{content}</strong>;
