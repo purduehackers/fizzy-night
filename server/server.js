@@ -19,7 +19,7 @@ client.on("messageCreate", async (message) => {
     try {
         // Pass message, false (Not Edited)
         await processDiscordMessage(message, false);
-    } catch (e) { console.log(e) }
+    } catch (e) { }
     //await sql`delete from messages where ctid in (select ctid from messages order by time limit 1)`
 });
 
@@ -223,7 +223,7 @@ async function processDiscordMessage(message, edited) {
             edited
         ],
     }).then(() => {
-    }).catch((e) => { console.log(e) });
+    }).catch((e) => { });
     // Add Author to user list
     sql_client.query({
         // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
@@ -341,7 +341,7 @@ async function processDiscordMessage(message, edited) {
                 ],
             }).then(() => {
                 sql_attachment_client.end();
-            }).catch((e) => { console.log(e) });
+            }).catch((e) => { });
         });
     }
 }

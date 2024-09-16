@@ -451,8 +451,6 @@ export const GenerateAttachmentHTML: FC<{
 }> = ({ attachmentId, attachmentData }) => {
     const targetAttachment = attachmentData.find((x) => x.id == parseInt(attachmentId)) ?? ERROR_ATTACHMENT;
 
-    console.log(attachmentData)
-
     if (targetAttachment.name != "") {
         if (targetAttachment.name == "Linked Image") {
             return (
