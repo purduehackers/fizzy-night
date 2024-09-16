@@ -13,9 +13,10 @@ export type Message = {
     time: string;
     uuid: string;
     guildid: string;
+    userid: string;
     attachments: string;
 };
-export type IdNameColour = {
+export type IdNameColor = {
     id: number;
     name: string;
     colour: number;
@@ -83,6 +84,13 @@ export const DiscordMessage: FC<{
     channelData,
     attachmentData
 }) => {
+    const targetUser = userData.find((x) => x.id == parseInt(message.userid)) ?? ERROR_USER;
+    let targetUserColors = DiscordColorToCssColors(targetUser.colour ?? 0);
+
+    if (targetUserColors.fg == "#bfdbfe") {
+        targetUserColors = {bg: "0", fg: "0"};
+    }
+
     return (
         <div
             className={`bg-neutral-900
@@ -106,7 +114,12 @@ export const DiscordMessage: FC<{
                                 rounded-full`}
                     alt={`${message.authorname}'s Profile Picture`}
                 />
-                <span className={`text-white text-xl align-middle`}>
+                <span
+                    className={`text-white text-xl align-middle`}
+                    style={{
+                        color: targetUserColors.fg,
+                    }}
+                >
                     {message.authorname}
                 </span>
 
@@ -143,19 +156,19 @@ export type MentionList = [
     color: string
 ];
 
-const ERROR_USER: IdNameColour = {
+const ERROR_USER: IdNameColor = {
     id: 0,
     name: "Unknown User",
     colour: 0
 };
 
-const ERROR_CHANNEL: IdNameColour = {
+const ERROR_CHANNEL: IdNameColor = {
     id: 0,
     name: "Unknown Channel",
     colour: 0
 }
 
-const ERROR_ROLE: IdNameColour = {
+const ERROR_ROLE: IdNameColor = {
     id: 0,
     name: "Unknown Role",
     colour: 0,
@@ -171,9 +184,9 @@ const ERROR_ATTACHMENT: AttachmentData = {
 export const ParseDiscordMessage: FC<{ 
     message: string;
     guildid: string;
-    userData: IdNameColour[];
-    roleData: IdNameColour[];
-    channelData: IdNameColour[];
+    userData: IdNameColor[];
+    roleData: IdNameColor[];
+    channelData: IdNameColor[];
 }> = ({
     message,
     guildid,
@@ -215,9 +228,9 @@ export const ParseDiscordAttachments: FC<{
 
 export const GenerateMessageHTML: FC<{
     node: SingleASTNode;
-    userData: IdNameColour[];
-    roleData: IdNameColour[];
-    channelData: IdNameColour[];
+    userData: IdNameColor[];
+    roleData: IdNameColor[];
+    channelData: IdNameColor[];
 }> = ({ node, userData, roleData, channelData }) => {
     let content = node.content;
 
@@ -336,15 +349,15 @@ export const GenerateMessageHTML: FC<{
             );
         case "user":
             const targetUser = userData.find((x) => x.id == node.id) ?? ERROR_USER;
-            const targetUserColours = DiscordColorToCssColors(targetUser.colour ?? 0);
+            const targetUserColors = DiscordColorToCssColors(targetUser.colour ?? 0);
 
             return (
                 <span
                     className={`border-[1px] px-[4px] rounded-md`}
                     style={{
-                        borderColor: targetUserColours.bg,
-                        backgroundColor: targetUserColours.bg,
-                        color: targetUserColours.fg,
+                        borderColor: targetUserColors.bg,
+                        backgroundColor: targetUserColors.bg,
+                        color: targetUserColors.fg,
                     }}
                 >
                     <strong>@{targetUser.name}</strong>
@@ -352,15 +365,15 @@ export const GenerateMessageHTML: FC<{
             );
         case "channel":
             const targetChannel = channelData.find((x) => x.id == node.id) ?? ERROR_CHANNEL;
-            const targetChannelColours = DiscordColorToCssColors(targetChannel.colour ?? 0);
+            const targetChannelColors = DiscordColorToCssColors(targetChannel.colour ?? 0);
 
             return (
                 <span
                     className={`px-[4px] rounded-md bg-blue-950 text-blue-200`}
                     style={{
-                        borderColor: targetChannelColours.bg,
-                        backgroundColor: targetChannelColours.bg,
-                        color: targetChannelColours.fg,
+                        borderColor: targetChannelColors.bg,
+                        backgroundColor: targetChannelColors.bg,
+                        color: targetChannelColors.fg,
                     }}
                 >
                     <strong>#{targetChannel.name}</strong>
@@ -368,15 +381,15 @@ export const GenerateMessageHTML: FC<{
             );
         case "role":
             const targetRole = roleData.find((x) => x.id == node.id) ?? ERROR_ROLE;
-            const targetRoleColours = DiscordColorToCssColors(targetRole.colour ?? 0);
+            const targetRoleColors = DiscordColorToCssColors(targetRole.colour ?? 0);
 
             return (
                 <span
                     className={`border-[1px] px-[4px] rounded-md`}
                     style={{
-                        borderColor: targetRoleColours.bg,
-                        backgroundColor: targetRoleColours.bg,
-                        color: targetRoleColours.fg,
+                        borderColor: targetRoleColors.bg,
+                        backgroundColor: targetRoleColors.bg,
+                        color: targetRoleColors.fg,
                     }}
                 >
                     <strong>@{targetRole.name}</strong>
@@ -592,20 +605,28 @@ export const GenerateTimeStampHTML: FC<{
 };
 
 export const DiscordColorToCssColors = (
-    color: number
+    color: number | string
 ): { bg: string; fg: string } => {
-    // console.log(color);
+
+    let parsedColor = 0
+
+    if (typeof color === "string") {
+        parsedColor = parseInt(color)
+    } else {
+        parsedColor = color
+    }
 
     if (color == 0) {
         return {
-            bg: "#172554",
+            bg: "#172554", // Discord decided to treat not having a color differently
             fg: "#bfdbfe",
         };
     }
 
-    // TODO: Implement proper color parsing
+    // Discord uses 0.1 transparency for roles, For Example 
+    // color: rgb(52, 152, 219); background-color: rgba(52, 152, 219, 0.1);
     return {
-        bg: "#172554",
-        fg: "#bfdbfe",
+        bg: "#" + parsedColor.toString(16) + "1A",
+        fg: "#" + parsedColor.toString(16),
     };
 };

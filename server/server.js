@@ -57,10 +57,24 @@ client.on("messageCreate", async (message) => {
                 }),
                 message.id,
                 message.guildId ?? null,
+                message.author.id,
                 attachmentIds,
             ],
         }).then(() => {
         }).catch(() => { });
+            // Add Author to user list
+            sql_client.query({
+                // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
+                // ALTER TABLE USERS ADD PRIMARY KEY (id);
+                text: `insert into users (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
+                values: [
+                    authorData.id,
+                    authorData.nickname ?? authorData.user.globalName ?? authorData.user.username,
+                    authorData.displayColor ?? 0
+                ],
+            }).then(() => {
+                sql_client.end();
+            }).catch(() => { });
 
         // Add Users to list
         if (message.mentions.users.size) {
