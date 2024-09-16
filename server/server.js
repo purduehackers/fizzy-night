@@ -42,8 +42,6 @@ client.on("messageCreate", async (message) => {
         })
 
         sql_client.query({
-            // Schema: VARCHAR(255), VARCHAR(255), VARCHAR(4000), VARCHAR(255), VARCHAR(255), VARCHAR(255), BIGINT, VARCHAR(255), VARCHAR(4000)
-            // ALTER TABLE messages ADD COLUMN attachments VARCHAR(4000);
             text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid, userid, attachments) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
             values: [
                 authorData.nickname ?? authorData.user.globalName ?? authorData.user.username,
@@ -64,8 +62,6 @@ client.on("messageCreate", async (message) => {
         }).catch(() => { });
             // Add Author to user list
             sql_client.query({
-                // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
-                // ALTER TABLE USERS ADD PRIMARY KEY (id);
                 text: `insert into users (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
                 values: [
                     authorData.id,
@@ -88,8 +84,6 @@ client.on("messageCreate", async (message) => {
                 await sql_user_client.connect();
                 // Add Users to list
                 sql_user_client.query({
-                    // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
-                    // ALTER TABLE USERS ADD PRIMARY KEY (id);
                     text: `insert into users (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
                     values: [
                         userData.id,
@@ -114,8 +108,6 @@ client.on("messageCreate", async (message) => {
                 await sql_role_client.connect();
                 // Add Roles to list
                 sql_role_client.query({
-                    // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
-                    // ALTER TABLE ROLES ADD PRIMARY KEY (id);
                     text: `insert into roles (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
                     values: [
                         roleData.id,
@@ -141,8 +133,6 @@ client.on("messageCreate", async (message) => {
                 await sql_channel_client.connect();
                 // Add Channels to list
                 sql_channel_client.query({
-                    // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
-                    // ALTER TABLE CHANNELS ADD PRIMARY KEY (id);
                     text: `insert into channels (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
                     values: [
                         channelData.id,
@@ -167,9 +157,6 @@ client.on("messageCreate", async (message) => {
                 await sql_attachment_client.connect();
                 // Add attachments to list
                 sql_attachment_client.query({
-                    // Note: BIGINT, VARCHAR(1000), VARCHAR(255) <= Your schema
-                    // CREATE TABLE attachments(id BIGINT, name VARCHAR(255), link VARCHAR(1000), type VARCHAR(255));
-                    // ALTER TABLE CHANNELS ADD PRIMARY KEY (id);
                     text: `insert into attachments (id, link, type, name) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO UPDATE SET id = $1, link = $2, type = $3, name = $4;`,
                     values: [
                         attachments.id,
