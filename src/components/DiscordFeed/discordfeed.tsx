@@ -12,6 +12,7 @@ export type Message = {
     time: string;
     uuid: string;
     guildid: string;
+    edited: string;
 };
 export type IdNameColour = {
     id: number;
@@ -105,7 +106,16 @@ export const DiscordMessage: FC<{
                 </div>
             </h1>
             <h1 className={`text-white text-xl break-all`}>
-                <ParseDiscordMessage message={message.content} guildid={message.guildid} userData={userData} roleData={roleData} channelData={channelData} />
+                <span>
+                    <ParseDiscordMessage message={message.content} guildid={message.guildid} userData={userData} roleData={roleData} channelData={channelData} />
+                    {message.edited ? (
+                    <p
+                        className={`inline-block ml-1 text-neutral-400 text-xs`}
+                    >
+                        (edited)
+                    </p>
+                    ) : null}
+                </span>
             </h1>
         </div>
     );

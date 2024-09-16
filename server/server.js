@@ -17,119 +17,17 @@ client.on("ready", () => {
 
 client.on("messageCreate", async (message) => {
     try {
-        const channel = message.channel,
-            guild = channel.guild,
-            everyone = guild.roles.everyone;
-        
-        if (!channel.permissionsFor(everyone).has(PermissionsBitField.Flags.ViewChannel))
-            return;
+        // Pass message, false (Not Edited)
+        await processDiscordMessage(message, false);
+    } catch (e) { console.log(e) }
+    //await sql`delete from messages where ctid in (select ctid from messages order by time limit 1)`
+});
 
-        const sql_client = await createClient({
-            connectionString:
-                process.env.VERCEL_PGSQL,
-        });
-
-        await sql_client.connect();
-
-        let authorData = (await message.guild.members.fetch(message.author.id))
-        sql_client.query({
-            // Note: All of these are apparently VARCHAR, except the last one is a BIGINT
-            text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid) VALUES ($1, $2, $3, $4, $5, $6, $7);`,
-            values: [
-                authorData.nickname ?? authorData.user.globalName ?? authorData.user.username,
-                message.author.displayAvatarURL(),
-                message.content.replace(/'+/gim, ""),
-                message.channel.name,
-                new Date(message.createdTimestamp).toLocaleTimeString([], {
-                    hour: "numeric",
-                    minute: "2-digit",
-                    timeZone: "America/Indiana/Indianapolis",
-                }),
-                message.id,
-                message.guildId ?? null,
-            ],
-        }).then(() => {
-        }).catch(() => {});
-
-        // Add Users to list
-        if (message.mentions.users.size) {
-            message.mentions.users.forEach(async user => {
-                let userData = (await message.guild.members.fetch(user.id))
-                const sql_user_client = await createClient({
-                    connectionString:
-                        process.env.VERCEL_PGSQL,
-                });
-
-                await sql_user_client.connect();
-                // Add Users to list
-                sql_user_client.query({
-                    // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
-                    // ALTER TABLE USERS ADD PRIMARY KEY (id);
-                    text: `insert into users (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
-                    values: [
-                        userData.id,
-                        userData.nickname ?? userData.user.globalName ?? userData.user.username,
-                        userData.displayColor ?? 0
-                    ],
-                }).then(() => {
-                    sql_user_client.end();
-                }).catch(() => {});
-            });
-        }
-
-        // Add Roles to list
-        if (message.mentions.roles.size) {
-            message.mentions.roles.forEach(async role => {
-                let roleData = (await message.guild.roles.fetch(role.id))
-                const sql_role_client = await createClient({
-                    connectionString:
-                        process.env.VERCEL_PGSQL,
-                });
-
-                await sql_role_client.connect();
-                // Add Roles to list
-                sql_role_client.query({
-                    // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
-                    // ALTER TABLE ROLES ADD PRIMARY KEY (id);
-                    text: `insert into roles (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
-                    values: [
-                        roleData.id,
-                        roleData.name,
-                        roleData.color
-                    ],
-                }).then(() => {
-                    sql_role_client.end();
-                }).catch(() => {});
-            });
-        }
-
-
-        // Check if the message mentions any channels
-        if (message.mentions.channels.size) {
-            message.mentions.channels.forEach(async channel => {
-                let channelData = (await message.guild.channels.fetch(channel.id))
-                const sql_channel_client = await createClient({
-                    connectionString:
-                        process.env.VERCEL_PGSQL,
-                });
-
-                await sql_channel_client.connect();
-                // Add Channels to list
-                sql_channel_client.query({
-                    // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
-                    // ALTER TABLE CHANNELS ADD PRIMARY KEY (id);
-                    text: `insert into channels (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
-                    values: [
-                        channelData.id,
-                        channelData.name,
-                        0
-                    ],
-                }).then(() => {
-                    sql_channel_client.end();
-                }).catch(() => {});
-            });
-        }
-
+client.on("messageUpdate", async (oldMessage, newMessage) => {
+    try {
+        // Pass message, true (Edited)
+        console.log(newMessage)
+        await processDiscordMessage(newMessage, true);
     } catch (e) { }
     //await sql`delete from messages where ctid in (select ctid from messages order by time limit 1)`
 });
@@ -279,4 +177,130 @@ const computeLanderPhysics = (lander) => {
     if (lander.x < 0) lander.x += mapWidth;
 
     return lander;
+}
+
+async function processDiscordMessage(message, edited) {
+    const channel = message.channel,
+        guild = channel.guild,
+        everyone = guild.roles.everyone;
+
+    if (!channel.permissionsFor(everyone).has(PermissionsBitField.Flags.ViewChannel))
+        return;
+
+    const sql_client = await createClient({
+        connectionString:
+            process.env.VERCEL_PGSQL,
+    });
+
+    await sql_client.connect();
+
+    let authorData = (await message.guild.members.fetch(message.author.id))
+
+    let attachmentIds = null;
+    message.attachments.forEach(async attachments => {
+        if (attachmentIds == null) {
+            attachmentIds = [];
+        }
+        attachmentIds.push(attachments.id)
+    })
+
+    sql_client.query({
+        // Schema: VARCHAR(255), VARCHAR(255), VARCHAR(4000), VARCHAR(255), VARCHAR(255), VARCHAR(255), BIGINT*, VARCHAR(255), BOOLEAN
+        // ALTER TABLE messages ADD COLUMN edited BOOLEAN;
+        text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid, edited) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (uuid) DO UPDATE SET authorName = $1, authorImage = $2, content = $3, channel = $4, time = $5, uuid = $6, guildid = $7, edited = $8;`,
+        values: [
+            authorData.nickname ?? authorData.user.globalName ?? authorData.user.username,
+            message.author.displayAvatarURL(),
+            message.content.replace(/'+/gim, ""),
+            message.channel.name,
+            new Date(message.createdTimestamp).toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "2-digit",
+                timeZone: "America/Indiana/Indianapolis",
+            }),
+            message.id,
+            message.guildId ?? null,
+            edited
+        ],
+    }).then(() => {
+    }).catch((e) => { console.log(e)});
+
+    // Add Users to list
+    if (message.mentions.users.size) {
+        message.mentions.users.forEach(async user => {
+            let userData = (await message.guild.members.fetch(user.id))
+            const sql_user_client = await createClient({
+                connectionString:
+                    process.env.VERCEL_PGSQL,
+            });
+
+            await sql_user_client.connect();
+            // Add Users to list
+            sql_user_client.query({
+                // Note: BIGINT*, VARCHAR(32), BIGINT <= Your schema
+                // ALTER TABLE USERS ADD PRIMARY KEY (id);
+                text: `insert into users (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
+                values: [
+                    userData.id,
+                    userData.nickname ?? userData.user.globalName ?? userData.user.username,
+                    userData.displayColor ?? 0
+                ],
+            }).then(() => {
+                sql_user_client.end();
+            }).catch(() => { });
+        });
+    }
+
+    // Add Roles to list
+    if (message.mentions.roles.size) {
+        message.mentions.roles.forEach(async role => {
+            let roleData = (await message.guild.roles.fetch(role.id))
+            const sql_role_client = await createClient({
+                connectionString:
+                    process.env.VERCEL_PGSQL,
+            });
+
+            await sql_role_client.connect();
+            // Add Roles to list
+            sql_role_client.query({
+                // Note: BIGINT*, VARCHAR(32), BIGINT <= Your schema
+                // ALTER TABLE ROLES ADD PRIMARY KEY (id);
+                text: `insert into roles (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
+                values: [
+                    roleData.id,
+                    roleData.name,
+                    roleData.color
+                ],
+            }).then(() => {
+                sql_role_client.end();
+            }).catch(() => { });
+        });
+    }
+
+
+    // Check if the message mentions any channels
+    if (message.mentions.channels.size) {
+        message.mentions.channels.forEach(async channel => {
+            let channelData = (await message.guild.channels.fetch(channel.id))
+            const sql_channel_client = await createClient({
+                connectionString:
+                    process.env.VERCEL_PGSQL,
+            });
+
+            await sql_channel_client.connect();
+            // Add Channels to list
+            sql_channel_client.query({
+                // Note: BIGINT*, VARCHAR(32), BIGINT <= Your schema
+                // ALTER TABLE CHANNELS ADD PRIMARY KEY (id);
+                text: `insert into channels (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
+                values: [
+                    channelData.id,
+                    channelData.name,
+                    0
+                ],
+            }).then(() => {
+                sql_channel_client.end();
+            }).catch(() => { });
+        });
+    }
 }
