@@ -26,7 +26,6 @@ client.on("messageCreate", async (message) => {
 client.on("messageUpdate", async (oldMessage, newMessage) => {
     try {
         // Pass message, true (Edited)
-        console.log(newMessage)
         await processDiscordMessage(newMessage, true);
     } catch (e) { }
     //await sql`delete from messages where ctid in (select ctid from messages order by time limit 1)`
@@ -206,7 +205,7 @@ async function processDiscordMessage(message, edited) {
 
     sql_client.query({
         // Schema: VARCHAR(255), VARCHAR(255), VARCHAR(4000), VARCHAR(255), VARCHAR(255), VARCHAR(255), BIGINT, VARCHAR(255), VARCHAR(4000), BOOLEAN
-        text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid, userid, attachments, edited) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);`,
+        text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid, userid, attachments, edited) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (uuid) DO UPDATE SET content = $3, attachments = $9, edited = $10;`,
         values: [
             authorData.nickname ?? authorData.user.globalName ?? authorData.user.username,
             message.author.displayAvatarURL(),
@@ -224,7 +223,7 @@ async function processDiscordMessage(message, edited) {
             edited
         ],
     }).then(() => {
-    }).catch(() => { });
+    }).catch((e) => { console.log(e) });
     // Add Author to user list
     sql_client.query({
         // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
@@ -237,7 +236,7 @@ async function processDiscordMessage(message, edited) {
         ],
     }).then(() => {
         sql_client.end();
-    }).catch(() => { });
+    }).catch((e) => { });
 
     // Add Users to list
     if (message.mentions.users.size) {
