@@ -1,8 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-import { FC } from "react";
+import { FC, Key } from "react";
 import useSWR from "swr";
 import { parse } from "discord-markdown-parser";
 import { SingleASTNode } from "simple-markdown";
+import { CameraOutlined, PaperClipOutlined } from "@ant-design/icons";
 
 export type Message = {
     authorname: string;
@@ -12,12 +13,20 @@ export type Message = {
     time: string;
     uuid: string;
     guildid: string;
+    userid: string;
+    attachments: string;
     edited: string;
 };
-export type IdNameColour = {
+export type IdNameColor = {
     id: number;
     name: string;
     colour: number;
+};
+export type AttachmentData = {
+    id: number;
+    name: string;
+    link: string;
+    type: string;
 };
 
 export const DiscordFeed: FC = () => {
@@ -39,6 +48,10 @@ export const DiscordFeed: FC = () => {
         fallbackData: [],
         refreshInterval: 5000,
     });
+    const { data: attachmentData } = useSWR("/api/fetch-attachments", fetcher, {
+        fallbackData: [],
+        refreshInterval: 5000,
+    });
 
     const messages = messageData as Message[];
 
@@ -48,7 +61,7 @@ export const DiscordFeed: FC = () => {
                 Live Discord Stream
             </h1>
             {messages.map((message, i) => (
-                <DiscordMessage key={message.uuid} message={message} userData={userData ?? []} roleData={roleData ?? []} channelData={channelData ?? []} />
+                <DiscordMessage key={message.uuid} message={message} userData={userData ?? []} roleData={roleData ?? []} channelData={channelData ?? []} attachmentData={attachmentData ?? []} />
             ))}
             <h1 className={`text-neutral-600 text-3xl mb-4 text-center`}>
                 Post more to make
@@ -61,15 +74,24 @@ export const DiscordFeed: FC = () => {
 
 export const DiscordMessage: FC<{
     message: Message;
-    userData: IdNameColour[];
-    roleData: IdNameColour[];
-    channelData: IdNameColour[];
+    userData: IdNameColor[];
+    roleData: IdNameColor[];
+    channelData: IdNameColor[];
+    attachmentData: AttachmentData[];
 }> = ({
     message,
     userData,
     roleData,
-    channelData
+    channelData,
+    attachmentData
 }) => {
+    const targetUser = userData.find((x) => x.id == parseInt(message.userid)) ?? ERROR_USER;
+    let targetUserColors = DiscordColorToCssColors(targetUser.colour ?? 0);
+
+    if (targetUserColors.fg == "#bfdbfe") {
+        targetUserColors = {bg: "0", fg: "0"};
+    }
+
     return (
         <div
             className={`bg-neutral-900
@@ -93,27 +115,43 @@ export const DiscordMessage: FC<{
                                 rounded-full`}
                     alt={`${message.authorname}'s Profile Picture`}
                 />
-                <span className={`text-white text-xl align-middle`}>
+                <span
+                    className={`text-white text-xl align-middle`}
+                    style={{
+                        color: targetUserColors.fg,
+                    }}
+                >
                     {message.authorname}
                 </span>
 
                 <div className={`inline-block ml-4 align-middle`}>
                     <span className={`text-neutral-400 text-xl`}>
                         #{message.channel}
-                        <br />
+                        &ensp;
                         {message.time}
                     </span>
                 </div>
             </h1>
             <h1 className={`text-white text-xl break-all`}>
                 <span>
-                    <ParseDiscordMessage message={message.content} guildid={message.guildid} userData={userData} roleData={roleData} channelData={channelData} />
+                    {message.content ? (
+                        <ParseDiscordMessage message={message.content} guildid={message.guildid} userData={userData} roleData={roleData} channelData={channelData} />
+                    ) : null}
                     {message.edited ? (
-                    <p
-                        className={`inline-block ml-1 text-neutral-400 text-xs`}
-                    >
-                        (edited)
-                    </p>
+                      <p
+                          className={`inline-block ml-1 text-neutral-400 text-xs`}
+                      >
+                          (edited)
+                      </p>
+                    ) : null}
+                    {message.content && message.attachments ? (
+                        <span>
+                            <br />
+                            <br />
+                        </span>
+                    ) : null}
+                    {message.attachments ? (
+                        <ParseDiscordAttachments messageAttachments={message.attachments} attachmentData={attachmentData} />
                     ) : null}
                 </span>
             </h1>
@@ -121,84 +159,42 @@ export const DiscordMessage: FC<{
     );
 };
 
-// export const ParseDiscordMessage: FC<{message: string}> = ({ message }) => {
-//     let parsingString: string = message;
-
-//     let messageParts: JSX.Element[] = [];
-//     let nextTextPart: string = "";
-
-//     let keyIndex = 0;
-
-//     let pushLastTextPart = () => {
-//         if (nextTextPart == "")
-//             return;
-
-//         messageParts.push(
-//             <span key={keyIndex}>{nextTextPart}</span>
-//         )
-
-//         keyIndex++;
-//         nextTextPart = "";
-//     }
-
-//     while (parsingString.length > 0) {
-//         if (parsingString.match(/^(<:\w+:)(\d*)(>)/g)) { // emoji detected!!!
-//             pushLastTextPart();
-
-//             let emojiMatch = Array.from(parsingString.matchAll(/^<:\w*:(\d*)>/g), m => m[1]);
-//             messageParts.push(
-//                 <img key={keyIndex} width="28px" height="28px" className="inline-block" src={`https://cdn.discordapp.com/emojis/${emojiMatch[0]}.webp?size=128&quality=lossless`} alt={`Discord Emoji ${emojiMatch[0]}`}/>
-//             )
-//             keyIndex++;
-//             parsingString = parsingString.replace(/^<:\w*:(\d*)>/g, "");
-//         } else if (parsingString.match(/^(<a:\w+:)(\d*)(>)/g)) { // animated emoji detected!!!
-//             pushLastTextPart();
-
-//             let animatedEmojiMatch = Array.from(parsingString.matchAll(/^<a:\w*:(\d*)>/g), m => m[1]);
-//             messageParts.push(
-//                 <img key={keyIndex} width="28px" height="28px" className="inline-block" src={`https://cdn.discordapp.com/emojis/${animatedEmojiMatch[0]}.gif?size=128&quality=lossless`} alt={`Discord Emoji ${animatedEmojiMatch[0]}`}/>
-//             )
-//             keyIndex++;
-//             parsingString = parsingString.replace(/^<a:\w*:(\d*)>/g, "");
-//         } else {
-//             nextTextPart += parsingString[0];
-//             parsingString = parsingString.slice(1);
-//         }
-//     }
-//     pushLastTextPart();
-
-//     return messageParts;
-// }
-
 export type MentionList = [
     name: string,
     color: string
 ];
 
-const ERROR_USER: IdNameColour = {
+const ERROR_USER: IdNameColor = {
     id: 0,
     name: "Unknown User",
     colour: 0
 };
 
-const ERROR_CHANNEL: IdNameColour = {
+const ERROR_CHANNEL: IdNameColor = {
     id: 0,
     name: "Unknown Channel",
     colour: 0
 }
 
-const ERROR_ROLE: IdNameColour = {
+const ERROR_ROLE: IdNameColor = {
     id: 0,
     name: "Unknown Role",
     colour: 0,
 };
 
+const ERROR_ATTACHMENT: AttachmentData = {
+    id: 0,
+    name: "",
+    link: "",
+    type: ""
+};
+
 export const ParseDiscordMessage: FC<{ 
     message: string;
     guildid: string;
-    userData: IdNameColour[];
-    roleData: IdNameColour[];
-    channelData: IdNameColour[];
+    userData: IdNameColor[];
+    roleData: IdNameColor[];
+    channelData: IdNameColor[];
 }> = ({
     message,
     guildid,
@@ -206,43 +202,7 @@ export const ParseDiscordMessage: FC<{
     roleData,
     channelData
 }) => {
-    //const parsed: SingleASTNode[] = parse(message, 'extended');
-    //console.log(message)
     const parsed: SingleASTNode[] = parse(message, "extended");
-    //console.log(parsed)
-
-    if (guildid) {
-        // fuck you CORS
-        // const usersResponse = await fetch(`http://discord.com/api/guilds/${guildid}/members`, {
-        //     method: "GET",
-        //     headers: {
-        //         Authorization: "Bot ****",
-        //         "Access-Control-Allow-Origin": "*"
-        //     },
-        //     mode: "cors",
-        //     cache: "no-cache",
-        //     credentials: "same-origin",
-        //     redirect: "follow",
-        //     referrerPolicy: "no-referrer",
-        // });
-        // serverUsers = await usersResponse.json() as GuildUser[];
-        // console.log(serverUsers)
-        // const rolesResponse = await fetch(`http://discord.com/api/guilds/${guildid}/roles`, {
-        //     method: "GET",
-        //     headers: {
-        //         Authorization: "Bot ****",
-        //         "Access-Control-Allow-Origin": "*"
-        //     },
-        //     mode: "cors",
-        //     cache: "no-cache",
-        //     credentials: "same-origin",
-        //     redirect: "follow",
-        //     referrerPolicy: "no-referrer",
-        // });
-        // serverRoles = await rolesResponse.json() as GuildRole[];
-        // console.log(serverRoles)
-        //get all users and roles from the server
-    }
 
     return parsed.map((value, index) => (
         <GenerateMessageHTML
@@ -255,16 +215,35 @@ export const ParseDiscordMessage: FC<{
     ));
 };
 
+export const ParseDiscordAttachments: FC<{
+    messageAttachments: string;
+    attachmentData: AttachmentData[];
+}> = ({
+    messageAttachments,
+    attachmentData
+}) => {
+
+        let attachmentList = messageAttachments.slice(1, -1).replaceAll('"', '').split(",")
+
+        return attachmentList.map((attachmentId, index) => (
+            <GenerateAttachmentHTML
+                key={index}
+                attachmentId={attachmentId}
+                attachmentData={attachmentData}
+            />
+        ));
+    };
+
 export const GenerateMessageHTML: FC<{
     node: SingleASTNode;
-    userData: IdNameColour[];
-    roleData: IdNameColour[];
-    channelData: IdNameColour[];
+    userData: IdNameColor[];
+    roleData: IdNameColor[];
+    channelData: IdNameColor[];
 }> = ({ node, userData, roleData, channelData }) => {
     let content = node.content;
 
     if (Array.isArray(node.content)) {
-        content = node.content.map((value, index) => (
+        content = node.content.map((value: any, index: Key | null | undefined) => (
             <GenerateMessageHTML
                 key={index}
                 node={value} userData={userData} roleData={roleData} channelData={channelData}                
@@ -307,7 +286,40 @@ export const GenerateMessageHTML: FC<{
         case "autolink":
             return <>unimplemented markdown: autolink</>;
         case "url":
-            return <a className={`text-sky-500 `}>{content}</a>;
+            content = node.content.map((value: { content: string; }, index: Key | null | undefined) => {
+
+                // Tenor is ***not*** supported right now, due to complexity in their service.
+                // Unfortunatly that disqualifies most of the Discord GIF selector.
+                if (value.content.includes("https://tenor.com/view")) {
+                    return (
+                        <span key={index}>
+                            <PaperClipOutlined />
+                            <> </>
+                            <a className={`text-sky-500 `}>Tenor-GIF</a>
+                        </span>
+                    )
+                }
+
+                if (/\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(value.content.replace(/\?.*/, ''))) {
+                    return (
+                        <span key={index}>
+                            <CameraOutlined />
+                            <a className={`text-sky-500 px-[4px]`}>{value.content.replace(/[^/]*\/\/(?:[^@]*@)?([^:/]+(?:\.[^:/]+)*).*/, '$1')}</a>
+                            <br />
+                            <GenerateAttachmentHTML
+                                attachmentId={"0"}
+                                attachmentData={[
+                                    JSON.parse(`{ "id": "0", "name": "Linked Image", "link": "${value.content}", "type": "image/*"}`)
+                                ]}
+                            />
+                        </span>
+                    )
+                }
+
+                return <a key={index} className={`text-sky-500 `}>{content}</a>;
+            })
+
+            return <a>{content}</a>;      
         case "em":
             return <em>{content}</em>;
         case "strong":
@@ -345,15 +357,15 @@ export const GenerateMessageHTML: FC<{
             );
         case "user":
             const targetUser = userData.find((x) => x.id == node.id) ?? ERROR_USER;
-            const targetUserColours = DiscordColorToCssColors(targetUser.colour ?? 0);
+            const targetUserColors = DiscordColorToCssColors(targetUser.colour ?? 0);
 
             return (
                 <span
                     className={`border-[1px] px-[4px] rounded-md`}
                     style={{
-                        borderColor: targetUserColours.bg,
-                        backgroundColor: targetUserColours.bg,
-                        color: targetUserColours.fg,
+                        borderColor: targetUserColors.bg,
+                        backgroundColor: targetUserColors.bg,
+                        color: targetUserColors.fg,
                     }}
                 >
                     <strong>@{targetUser.name}</strong>
@@ -361,15 +373,15 @@ export const GenerateMessageHTML: FC<{
             );
         case "channel":
             const targetChannel = channelData.find((x) => x.id == node.id) ?? ERROR_CHANNEL;
-            const targetChannelColours = DiscordColorToCssColors(targetChannel.colour ?? 0);
+            const targetChannelColors = DiscordColorToCssColors(targetChannel.colour ?? 0);
 
             return (
                 <span
                     className={`px-[4px] rounded-md bg-blue-950 text-blue-200`}
                     style={{
-                        borderColor: targetChannelColours.bg,
-                        backgroundColor: targetChannelColours.bg,
-                        color: targetChannelColours.fg,
+                        borderColor: targetChannelColors.bg,
+                        backgroundColor: targetChannelColors.bg,
+                        color: targetChannelColors.fg,
                     }}
                 >
                     <strong>#{targetChannel.name}</strong>
@@ -377,15 +389,15 @@ export const GenerateMessageHTML: FC<{
             );
         case "role":
             const targetRole = roleData.find((x) => x.id == node.id) ?? ERROR_ROLE;
-            const targetRoleColours = DiscordColorToCssColors(targetRole.colour ?? 0);
+            const targetRoleColors = DiscordColorToCssColors(targetRole.colour ?? 0);
 
             return (
                 <span
                     className={`border-[1px] px-[4px] rounded-md`}
                     style={{
-                        borderColor: targetRoleColours.bg,
-                        backgroundColor: targetRoleColours.bg,
-                        color: targetRoleColours.fg,
+                        borderColor: targetRoleColors.bg,
+                        backgroundColor: targetRoleColors.bg,
+                        color: targetRoleColors.fg,
                     }}
                 >
                     <strong>@{targetRole.name}</strong>
@@ -431,6 +443,63 @@ export const GenerateMessageHTML: FC<{
     }
 
     return <></>;
+};
+
+export const GenerateAttachmentHTML: FC<{
+    attachmentId: string;
+    attachmentData: AttachmentData[];
+}> = ({ attachmentId, attachmentData }) => {
+    const targetAttachment = attachmentData.find((x) => x.id == parseInt(attachmentId)) ?? ERROR_ATTACHMENT;
+
+    console.log(attachmentData)
+
+    if (targetAttachment.name != "") {
+        if (targetAttachment.name == "Linked Image") {
+            return (
+                <span className={``}>
+                    <img
+                        style={{ maxWidth: 150, maxHeight: 150 }}
+                        width="auto"
+                        height="auto"
+                        className="inline-block px-[2px] w-[auto] h-[auto]"
+                        src={`${targetAttachment.link}`}
+                        alt={`${targetAttachment.name}`}
+                    /><></>
+                </span>
+            );
+        } else if (targetAttachment.type.includes("image/")) {
+            return (
+                <span className={`px-[8px] `}>
+                    <CameraOutlined />
+                    <> </>
+                    <img
+                        style={{ maxWidth: 150, maxHeight: 150 }}
+                        width="auto"
+                        height="auto"
+                        className="inline-block px-[2px] w-[auto] h-[auto]"
+                        src={`${targetAttachment.link}`}
+                        alt={`${targetAttachment.name}`}
+                    /><></>
+                </span>
+            );
+        } else {
+
+            let attachmentName = targetAttachment.name
+            if (attachmentName.length >= 15) {
+                attachmentName = attachmentName.substring(0,12) + "...";
+            }
+
+            return (
+                <span className={`px-[8px]`}>
+                    <PaperClipOutlined />
+                    <> </>
+                    <a className={`text-sky-500 `} href={targetAttachment.link}>{attachmentName}</a><></>
+                </span>
+            );
+        }
+    }
+
+    return (<></>);
 };
 
 const DAYS_OF_WEEK = [
@@ -544,20 +613,28 @@ export const GenerateTimeStampHTML: FC<{
 };
 
 export const DiscordColorToCssColors = (
-    color: number
+    color: number | string
 ): { bg: string; fg: string } => {
-    // console.log(color);
+
+    let parsedColor = 0
+
+    if (typeof color === "string") {
+        parsedColor = parseInt(color)
+    } else {
+        parsedColor = color
+    }
 
     if (color == 0) {
         return {
-            bg: "#172554",
+            bg: "#172554", // Discord decided to treat not having a color differently
             fg: "#bfdbfe",
         };
     }
 
-    // TODO: Implement proper color parsing
+    // Discord uses 0.1 transparency for roles, For Example 
+    // color: rgb(52, 152, 219); background-color: rgba(52, 152, 219, 0.1);
     return {
-        bg: "#172554",
-        fg: "#bfdbfe",
+        bg: "#" + parsedColor.toString(16) + "1A",
+        fg: "#" + parsedColor.toString(16),
     };
 };
