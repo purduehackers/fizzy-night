@@ -271,7 +271,7 @@ export const GenerateMessageHTML: FC<{
                 // Unfortunatly that disqualifies most of the Discord GIF selector.
                 if (value.content.includes("https://tenor.com/view")) {
                     return (
-                        <span>
+                        <span key={index}>
                             <PaperClipOutlined />
                             <> </>
                             <a className={`text-sky-500 `}>Tenor-GIF</a>
@@ -281,7 +281,7 @@ export const GenerateMessageHTML: FC<{
 
                 if (/\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(value.content.replace(/\?.*/, ''))) {
                     return (
-                        <span>
+                        <span key={index}>
                             <CameraOutlined />
                             <a className={`text-sky-500 px-[4px]`}>{value.content.replace(/[^/]*\/\/(?:[^@]*@)?([^:/]+(?:\.[^:/]+)*).*/, '$1')}</a>
                             <br />
@@ -295,7 +295,7 @@ export const GenerateMessageHTML: FC<{
                     )
                 }
 
-                return <a className={`text-sky-500 `}>{content}</a>;
+                return <a key={index} className={`text-sky-500 `}>{content}</a>;
             })
 
             return <a>{content}</a>;      
