@@ -20,7 +20,7 @@ client.on("messageCreate", async (message) => {
         const channel = message.channel,
             guild = channel.guild,
             everyone = guild.roles.everyone;
-        
+
         if (!channel.permissionsFor(everyone).has(PermissionsBitField.Flags.ViewChannel))
             return;
 
@@ -33,8 +33,8 @@ client.on("messageCreate", async (message) => {
 
         let authorData = (await message.guild.members.fetch(message.author.id))
         sql_client.query({
-            // Note: All of these are apparently VARCHAR, except the last one is a BIGINT
-            text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid) VALUES ($1, $2, $3, $4, $5, $6, $7);`,
+            // Schema: VARCHAR(255), VARCHAR(255), VARCHAR(4000), VARCHAR(255), VARCHAR(255), VARCHAR(255), BIGINT, VARCHAR(255)
+            text: `insert into messages (authorName, authorImage, content, channel, time, uuid, guildid, userid) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`,
             values: [
                 authorData.nickname ?? authorData.user.globalName ?? authorData.user.username,
                 message.author.displayAvatarURL(),
@@ -47,9 +47,26 @@ client.on("messageCreate", async (message) => {
                 }),
                 message.id,
                 message.guildId ?? null,
+                message.author.id,
             ],
         }).then(() => {
-        }).catch(() => {});
+        }).catch(() => { });
+
+            // Add Author to user list
+            // ALTER TABLE messages
+            // ADD COLUMN userid VARCHAR(255);
+            sql_client.query({
+                // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
+                // ALTER TABLE USERS ADD PRIMARY KEY (id);
+                text: `insert into users (id, name, colour) VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET id = $1, name = $2, colour = $3;`,
+                values: [
+                    authorData.id,
+                    authorData.nickname ?? authorData.user.globalName ?? authorData.user.username,
+                    authorData.displayColor ?? 0
+                ],
+            }).then(() => {
+                sql_client.end();
+            }).catch(() => { });
 
         // Add Users to list
         if (message.mentions.users.size) {
@@ -73,7 +90,7 @@ client.on("messageCreate", async (message) => {
                     ],
                 }).then(() => {
                     sql_user_client.end();
-                }).catch(() => {});
+                }).catch(() => { });
             });
         }
 
@@ -99,7 +116,7 @@ client.on("messageCreate", async (message) => {
                     ],
                 }).then(() => {
                     sql_role_client.end();
-                }).catch(() => {});
+                }).catch(() => { });
             });
         }
 
@@ -126,7 +143,7 @@ client.on("messageCreate", async (message) => {
                     ],
                 }).then(() => {
                     sql_channel_client.end();
-                }).catch(() => {});
+                }).catch(() => { });
             });
         }
 
