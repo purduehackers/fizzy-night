@@ -70,10 +70,7 @@ export const DiscordMessage: FC<{
     roleData,
     channelData
 }) => {
-
-    console.log(message.userid)
     const targetUser = userData.find((x) => x.id == parseInt(message.userid)) ?? ERROR_USER;
-    console.log(targetUser);
     let targetUserColors = DiscordColorToCssColors(targetUser.colour ?? 0);
 
     if (targetUserColors.fg == "#bfdbfe") {
@@ -554,8 +551,6 @@ export const DiscordColorToCssColors = (
 ): { bg: string; fg: string } => {
 
     let parsedColor = 0
-
-    console.log(color)
 
     if (typeof color === "string") {
         parsedColor = parseInt(color)
