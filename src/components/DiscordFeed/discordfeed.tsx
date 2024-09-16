@@ -73,9 +73,9 @@ export const DiscordFeed: FC = () => {
 
 export const DiscordMessage: FC<{
     message: Message;
-    userData: IdNameColour[];
-    roleData: IdNameColour[];
-    channelData: IdNameColour[];
+    userData: IdNameColor[];
+    roleData: IdNameColor[];
+    channelData: IdNameColor[];
     attachmentData: AttachmentData[];
 }> = ({
     message,
