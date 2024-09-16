@@ -185,7 +185,7 @@ client.on("messageCreate", async (message) => {
 
 
     } catch (e) { }
-    //await sql`delete from messages where ctid in (select ctid from messages order by time limit 1)`
+    await purgeOldMessages()
 });
 
 client.login(
@@ -333,4 +333,64 @@ const computeLanderPhysics = (lander) => {
     if (lander.x < 0) lander.x += mapWidth;
 
     return lander;
+}
+
+async function purgeOldMessages() {
+
+    const sql_client = await createClient({
+        connectionString:
+            process.env.VERCEL_PGSQL,
+    });
+    const sql_user_client = await createClient({
+        connectionString:
+            process.env.VERCEL_PGSQL,
+    });
+    const sql_role_client = await createClient({
+        connectionString:
+            process.env.VERCEL_PGSQL,
+    });
+    const sql_channel_client = await createClient({
+        connectionString:
+            process.env.VERCEL_PGSQL,
+    });
+
+    await sql_client.connect();
+    // Delete old messages
+    sql_client.query({
+        text: `delete from messages where ctid in (select ctid from messages order by ctid asc limit greatest((select (select count(*) from messages) - 100), 0));`,
+    }).then(() => {
+        sql_client.end();
+    }).catch((e) => { console.log(e) });
+
+    await sql_user_client.connect();
+    // Delete old users
+    sql_user_client.query({
+        text: `delete from users where ctid in (select ctid from users order by ctid asc limit greatest((select (select count(*) from users) - 1000), 0));`,
+    }).then(() => {
+        sql_user_client.end();
+    }).catch((e) => { console.log(e) });
+
+    await sql_role_client.connect();
+    // Delete old roles
+    sql_role_client.query({
+        text: `delete from roles where ctid in (select ctid from roles order by ctid asc limit greatest((select (select count(*) from roles) - 100), 0));`,
+    }).then(() => {
+        sql_role_client.end();
+    }).catch((e) => { console.log(e) });
+
+    await sql_channel_client.connect();
+    // Delete old channels
+    sql_channel_client.query({
+        text: `delete from channels where ctid in (select ctid from channels order by ctid asc limit greatest((select (select count(*) from channels) - 100), 0));`,
+    }).then(() => {
+        sql_channel_client.end();
+    }).catch((e) => { console.log(e) });
+
+    await sql_attachment_client.connect();
+    // Delete old attachments
+    sql_attachment_client.query({
+        text: `delete from attachments where ctid in (select ctid from attachments order by ctid asc limit greatest((select (select count(*) from attachments) - 200), 0));`,
+    }).then(() => {
+        sql_attachment_client.end();
+    }).catch((e) => { console.log(e) });
 }
