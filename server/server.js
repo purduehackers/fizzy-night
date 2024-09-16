@@ -53,8 +53,6 @@ client.on("messageCreate", async (message) => {
         }).catch(() => { });
 
             // Add Author to user list
-            // ALTER TABLE messages
-            // ADD COLUMN userid VARCHAR(255);
             sql_client.query({
                 // Note: BIGINT, VARCHAR(32), BIGINT <= Your schema
                 // ALTER TABLE USERS ADD PRIMARY KEY (id);
