@@ -295,7 +295,9 @@ export const Schedule: FC = () => {
                                 {HACK_NIGHT_SCHEDULE.map((event, i) => {
                                     if (IsEventOverflowing(event)) {
                                         return (
-                                            <>
+                                            <span
+                                            key={`span${i}`}
+                                            >
                                                 <ScheduleEventCard
                                                     key={`event${i}pt1`}
                                                     scheduleContainerRef={
@@ -339,7 +341,7 @@ export const Schedule: FC = () => {
                                                     innerEventOffset={() => {}}
                                                     offsets={offsets}
                                                 />
-                                            </>
+                                            </span>
                                         );
                                     } else {
                                         return (
