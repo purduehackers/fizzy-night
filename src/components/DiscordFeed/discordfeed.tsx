@@ -15,6 +15,7 @@ export type Message = {
     guildid: string;
     userid: string;
     attachments: string;
+    edited: string;
 };
 export type IdNameColor = {
     id: number;
@@ -132,9 +133,16 @@ export const DiscordMessage: FC<{
                 </div>
             </h1>
             <h1 className={`text-white text-xl break-all`}>
-                        <span className="inline-block">
+                <span>
                     {message.content ? (
                         <ParseDiscordMessage message={message.content} guildid={message.guildid} userData={userData} roleData={roleData} channelData={channelData} />
+                    ) : null}
+                    {message.edited ? (
+                      <p
+                          className={`inline-block ml-1 text-neutral-400 text-xs`}
+                      >
+                          (edited)
+                      </p>
                     ) : null}
                     {message.content && message.attachments ? (
                         <span>
@@ -145,8 +153,8 @@ export const DiscordMessage: FC<{
                     {message.attachments ? (
                         <ParseDiscordAttachments messageAttachments={message.attachments} attachmentData={attachmentData} />
                     ) : null}
-                    </span>
-                </h1>
+                </span>
+            </h1>
         </div>
     );
 };
@@ -442,8 +450,6 @@ export const GenerateAttachmentHTML: FC<{
     attachmentData: AttachmentData[];
 }> = ({ attachmentId, attachmentData }) => {
     const targetAttachment = attachmentData.find((x) => x.id == parseInt(attachmentId)) ?? ERROR_ATTACHMENT;
-
-    console.log(attachmentData)
 
     if (targetAttachment.name != "") {
         if (targetAttachment.name == "Linked Image") {
