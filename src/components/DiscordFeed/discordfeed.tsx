@@ -35,9 +35,10 @@ export type AttachmentData = {
     type: string;
 };
 
+//@ts-ignore
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
+
 export const DiscordFeed: FC = () => {
-    //@ts-ignore
-    const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
     const { data: apiRes } = useSWR("/api/fetch-discord", fetcher, {
         fallbackData: [],
