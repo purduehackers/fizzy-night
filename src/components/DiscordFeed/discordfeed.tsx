@@ -5,6 +5,13 @@ import { parse } from "discord-markdown-parser";
 import { SingleASTNode } from "simple-markdown";
 import { CameraOutlined, PaperClipOutlined } from "@ant-design/icons";
 
+export type ApiResponse = {
+    messages: Message;
+    users: IdNameColor;
+    roles: IdNameColor;
+    channels: IdNameColor;
+    attachments: AttachmentData;
+};
 export type Message = {
     authorname: string;
     authorimage: string;
@@ -29,31 +36,23 @@ export type AttachmentData = {
     type: string;
 };
 
+//@ts-ignore
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
+
 export const DiscordFeed: FC = () => {
-    //@ts-ignore
-    const fetcher = (...args) => fetch(...args).then((res) => res.json());
-    const { data: messageData } = useSWR("/api/fetch-posts", fetcher, {
-        fallbackData: [],
-        refreshInterval: 5000,
-    });
-    const { data: userData } = useSWR("/api/fetch-users", fetcher, {
-        fallbackData: [],
-        refreshInterval: 5000,
-    });
-    const { data: roleData } = useSWR("/api/fetch-roles", fetcher, {
-        fallbackData: [],
-        refreshInterval: 5000,
-    });
-    const { data: channelData } = useSWR("/api/fetch-channels", fetcher, {
-        fallbackData: [],
-        refreshInterval: 5000,
-    });
-    const { data: attachmentData } = useSWR("/api/fetch-attachments", fetcher, {
-        fallbackData: [],
+
+    const { data: apiRes } = useSWR("/api/fetch-discord", fetcher, {
+        fallbackData: {
+            messages: [],
+            users: [],
+            roles: [],
+            channels: [],
+            attachments: []
+        },
         refreshInterval: 5000,
     });
 
-    const messages = messageData as Message[];
+    const messages = apiRes.messages as Message[];
 
     return (
         <div className={`w-[50vw] p-4 overflow-hidden`}>
@@ -61,7 +60,7 @@ export const DiscordFeed: FC = () => {
                 Live Discord Stream
             </h1>
             {messages.map((message, i) => (
-                <DiscordMessage key={message.uuid} message={message} userData={userData ?? []} roleData={roleData ?? []} channelData={channelData ?? []} attachmentData={attachmentData ?? []} />
+                    <DiscordMessage key={message.uuid} message={message} userData={apiRes.users ?? []} roleData={apiRes.roles ?? []} channelData={apiRes.channels ?? []} attachmentData={apiRes.attachments ?? []} />
             ))}
             <h1 className={`text-neutral-600 text-3xl mb-4 text-center`}>
                 Post more to make
