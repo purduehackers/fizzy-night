@@ -41,7 +41,13 @@ const fetcher = (...args) => fetch(...args).then((res) => res.json());
 export const DiscordFeed: FC = () => {
 
     const { data: apiRes } = useSWR("/api/fetch-discord", fetcher, {
-        fallbackData: [],
+        fallbackData: {
+            messages: [],
+            users: [],
+            roles: [],
+            channels: [],
+            attachments: []
+        },
         refreshInterval: 5000,
     });
 
