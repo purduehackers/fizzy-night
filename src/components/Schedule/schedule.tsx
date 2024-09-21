@@ -66,6 +66,21 @@ const HACK_NIGHT_SCHEDULE = [
         },
     },
     {
+        title: "Scavenger Hunt",
+        start: {
+            day: Day.Friday,
+            hour: 20,
+            minute: 0,
+            second: 0,
+        },
+        end: {
+            day: Day.Monday,
+            hour: 0,
+            minute: 0,
+            second: 0,
+        },
+    },
+    {
         title: "Circle: Spoken Language",
         start: {
             day: Day.Friday,
