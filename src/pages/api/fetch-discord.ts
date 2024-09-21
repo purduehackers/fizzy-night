@@ -10,8 +10,8 @@ const fetchDiscord = async (req: NextApiRequest, res: NextApiResponse) => {
     const { rows: messages } = await client.sql`select * from messages order by uuid desc limit 6;`
     const { rows: users } = await client.sql`select * from users;`
     const { rows: roles } = await client.sql`select * from roles;`
-    const { rows: channels } = await client.sql`select * from users;`
-    const { rows: attachments } = await client.sql`select * from users;`
+    const { rows: channels } = await client.sql`select * from channels;`
+    const { rows: attachments } = await client.sql`select * from attachments;`
 
     res.json({
         "messages": messages,
