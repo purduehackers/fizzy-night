@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits, PermissionsBitField } from "discord.js";
-import { createClient } from "@vercel/postgres";
+import { createPool } from "@vercel/postgres";
 import { Server } from "socket.io";
 import 'dotenv/config';
 
@@ -20,7 +20,7 @@ client.on("messageCreate", async (message) => {
         // Pass message, false (Not Edited)
         await processDiscordMessage(message, false);
     } catch (e) { }
-        purgeOldMessages()
+        //purgeOldMessages()
 });
 
 client.on("messageUpdate", async (oldMessage, newMessage) => {
@@ -44,7 +44,7 @@ client.on("messageDeleteBulk", async (messages) => {
             await deleteDiscordMessage(message);
         });
     } catch (e) { }
-    await purgeOldMessages()
+    //await purgeOldMessages()
 });
 
 client.login(
@@ -195,21 +195,25 @@ const computeLanderPhysics = (lander) => {
 }
 
 async function purgeOldMessages() {
-      const sql_client = await createClient({
+      const sql_client = await createPool({
         connectionString:
-            process.env.VERCEL_PGSQL,
+            process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
     });
-      const sql_user_client = await createClient({
+      const sql_user_client = await createPool({
         connectionString:
-            process.env.VERCEL_PGSQL,
+            process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
     });
-    const sql_role_client = await createClient({
+    const sql_role_client = await createPool({
         connectionString:
-            process.env.VERCEL_PGSQL,
+            process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
     });
-    const sql_channel_client = await createClient({
+    const sql_channel_client = await createPool({
         connectionString:
-            process.env.VERCEL_PGSQL,
+            process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
+    });
+    const sql_attachment_client = await createPool({
+        connectionString:
+            process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
     });
 
     await sql_client.connect();
@@ -223,7 +227,7 @@ async function purgeOldMessages() {
     await sql_user_client.connect();
     // Delete old users
     sql_user_client.query({
-        text: `delete from users where ctid in (select ctid from users order by ctid asc limit greatest((select (select count(*) from users) - 1000), 0));`,
+        text: `delete from users where ctid in (select ctid from users order by uudi asc limit greatest((select (select count(*) from users) - 1000), 0));`,
     }).then(() => {
         sql_user_client.end();
     }).catch((e) => { console.log(e) });
@@ -254,6 +258,7 @@ async function purgeOldMessages() {
 }
 
 async function processDiscordMessage(message, edited) {
+    console.log(message)
     const channel = message.channel,
         guild = channel.guild,
         everyone = guild.roles.everyone;
@@ -261,9 +266,9 @@ async function processDiscordMessage(message, edited) {
     if (!channel.permissionsFor(everyone).has(PermissionsBitField.Flags.ViewChannel))
         return;
 
-    const sql_client = await createClient({
+    const sql_client = await createPool({
         connectionString:
-            process.env.VERCEL_PGSQL,
+            process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
     });
 
     await sql_client.connect();
@@ -317,9 +322,9 @@ async function processDiscordMessage(message, edited) {
     if (message.mentions.users.size) {
         message.mentions.users.forEach(async user => {
             let userData = (await message.guild.members.fetch(user.id))
-            const sql_user_client = await createClient({
+            const sql_user_client = await createPool({
                 connectionString:
-                    process.env.VERCEL_PGSQL,
+                    process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
             });
 
             await sql_user_client.connect();
@@ -343,9 +348,9 @@ async function processDiscordMessage(message, edited) {
     if (message.mentions.roles.size) {
         message.mentions.roles.forEach(async role => {
             let roleData = (await message.guild.roles.fetch(role.id))
-            const sql_role_client = await createClient({
+            const sql_role_client = await createPool({
                 connectionString:
-                    process.env.VERCEL_PGSQL,
+                    process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
             });
 
             await sql_role_client.connect();
@@ -370,9 +375,9 @@ async function processDiscordMessage(message, edited) {
     if (message.mentions.channels.size) {
         message.mentions.channels.forEach(async channel => {
             let channelData = (await message.guild.channels.fetch(channel.id))
-            const sql_channel_client = await createClient({
+            const sql_channel_client = await createPool({
                 connectionString:
-                    process.env.VERCEL_PGSQL,
+                    process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
             });
 
             await sql_channel_client.connect();
@@ -396,9 +401,9 @@ async function processDiscordMessage(message, edited) {
     if (message.attachments.size) {
         message.attachments.forEach(async attachments => {
 
-            const sql_attachment_client = await createClient({
+            const sql_attachment_client = await createPool({
                 connectionString:
-                    process.env.VERCEL_PGSQL,
+                    process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
             });
 
             await sql_attachment_client.connect();
@@ -423,9 +428,9 @@ async function processDiscordMessage(message, edited) {
 
 async function deleteDiscordMessage(message) {
     // Drop message from table
-    const sql_client = await createClient({
+    const sql_client = await createPool({
         connectionString:
-            process.env.VERCEL_PGSQL,
+            process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
     });
 
     await sql_client.connect();
