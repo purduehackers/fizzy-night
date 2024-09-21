@@ -80,21 +80,21 @@ const HACK_NIGHT_SCHEDULE = [
             second: 59,
         },
     },
-    {
-        title: "Passport-Making Ceremony",
-        start: {
-            day: Day.Friday,
-            hour: 22,
-            minute: 0,
-            second: 0,
-        },
-        end: {
-            day: Day.Friday,
-            hour: 22,
-            minute: 59,
-            second: 59,
-        },
-    },
+    // {
+    //     title: "Passport-Making Ceremony",
+    //     start: {
+    //         day: Day.Friday,
+    //         hour: 22,
+    //         minute: 0,
+    //         second: 0,
+    //     },
+    //     end: {
+    //         day: Day.Friday,
+    //         hour: 22,
+    //         minute: 59,
+    //         second: 59,
+    //     },
+    // },
     {
         title: "Circle: Programming Languages",
         start: {
