@@ -11,6 +11,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         <div suppressHydrationWarning>
         <Head>
             <title>Hack Night</title>
+			<meta name="apple-mobile-web-app-capable" content="yes" />
             <meta
                 name="description"
                 content="The Hero Screen for Purdue Hackers' Hack Night event."
