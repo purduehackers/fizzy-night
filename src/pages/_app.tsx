@@ -12,6 +12,7 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
         <Head>
             <title>Hack Night</title>
 			<meta name="apple-mobile-web-app-capable" content="yes" />
+			<meta name="theme-color" content="#000" />
             <meta
                 name="description"
                 content="The Hero Screen for Purdue Hackers' Hack Night event."
