@@ -66,21 +66,6 @@ const HACK_NIGHT_SCHEDULE = [
         },
     },
     {
-        title: "Scavenger Hunt",
-        start: {
-            day: Day.Friday,
-            hour: 20,
-            minute: 0,
-            second: 0,
-        },
-        end: {
-            day: Day.Monday,
-            hour: 0,
-            minute: 0,
-            second: 0,
-        },
-    },
-    {
         title: "Circle: Spoken Language",
         start: {
             day: Day.Friday,
@@ -95,21 +80,21 @@ const HACK_NIGHT_SCHEDULE = [
             second: 59,
         },
     },
-    // {
-    //     title: "Passport-Making Ceremony",
-    //     start: {
-    //         day: Day.Friday,
-    //         hour: 22,
-    //         minute: 0,
-    //         second: 0,
-    //     },
-    //     end: {
-    //         day: Day.Friday,
-    //         hour: 22,
-    //         minute: 59,
-    //         second: 59,
-    //     },
-    // },
+    {
+        title: "Passport-Making Ceremony",
+        start: {
+            day: Day.Friday,
+            hour: 22,
+            minute: 0,
+            second: 0,
+        },
+        end: {
+            day: Day.Friday,
+            hour: 22,
+            minute: 59,
+            second: 59,
+        },
+    },
     {
         title: "Circle: Programming Languages",
         start: {
@@ -310,9 +295,7 @@ export const Schedule: FC = () => {
                                 {HACK_NIGHT_SCHEDULE.map((event, i) => {
                                     if (IsEventOverflowing(event)) {
                                         return (
-                                            <span
-                                            key={`span${i}`}
-                                            >
+                                            <span key={`span${i}`}>
                                                 <ScheduleEventCard
                                                     key={`event${i}pt1`}
                                                     scheduleContainerRef={
