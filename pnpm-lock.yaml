@@ -39,7 +39,7 @@ dependencies:
     specifier: ^1.1.0
     version: 1.1.0
   next:
-    specifier: 14.0.4
+    specifier: ^14.0.4
     version: 14.0.4(react-dom@18.2.0)(react@18.2.0)
   p5:
     specifier: ^1.9.0
@@ -59,6 +59,9 @@ dependencies:
   react-fast-marquee:
     specifier: ^1.6.2
     version: 1.6.3(react-dom@18.2.0)(react@18.2.0)
+  reconnecting-websocket:
+    specifier: ^4.4.0
+    version: 4.4.0
   simple-markdown:
     specifier: ^0.7.3
     version: 0.7.3
@@ -3278,6 +3281,10 @@ packages:
     dependencies:
       picomatch: 2.3.1
     dev: true
+
+  /reconnecting-websocket@4.4.0:
+    resolution: {integrity: sha512-D2E33ceRPga0NvTDhJmphEgJ7FUYF0v4lr1ki0csq06OdlxKfugGzN0dSkxM/NfqCxYELK4KcaTOUOjTV6Dcng==}
+    dev: false
 
   /reflect.getprototypeof@1.0.4:
     resolution: {integrity: sha512-ECkTw8TmJwW60lOTR+ZkODISW6RQ8+2CL3COqtiJKLd6MmB45hN51HprHFziKLGkAuTGQhBb91V8cy+KHlaCjw==}
