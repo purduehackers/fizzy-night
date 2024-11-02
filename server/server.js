@@ -258,7 +258,6 @@ async function purgeOldMessages() {
 }
 
 async function processDiscordMessage(message, edited) {
-    console.log(message)
     const channel = message.channel,
         guild = channel.guild,
         everyone = guild.roles.everyone;
