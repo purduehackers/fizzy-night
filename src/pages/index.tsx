@@ -46,7 +46,7 @@ const MainPage: FC = () => {
                         <Info
                             title={"HACK NIGHT"}
                             tagline={"getting jazzy!"}
-                            taglineColour={"gold"}
+                            taglineColour={"amber"}
                             version={"5.11"}
                         />
                     </div>
