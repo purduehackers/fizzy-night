@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, PermissionsBitField } from "discord.js";
+import { Client, GatewayIntentBits, PermissionsBitField, StickerFormatType } from "discord.js";
 import { createPool } from "@vercel/postgres";
 import { Server } from "socket.io";
 import 'dotenv/config';
@@ -281,6 +281,12 @@ async function processDiscordMessage(message, edited) {
         }
         attachmentIds.push(attachments.id)
     })
+    message.stickers.forEach(async stickers => {
+        if (attachmentIds == null) {
+            attachmentIds = [];
+        }
+        attachmentIds.push(stickers.id)
+    })
 
     sql_client.query({
         // Schema: VARCHAR(255), VARCHAR(255), VARCHAR(4000), VARCHAR(255), VARCHAR(255), VARCHAR(255), BIGINT, VARCHAR(255), VARCHAR(4000), BOOLEAN
@@ -393,6 +399,49 @@ async function processDiscordMessage(message, edited) {
             }).then(() => {
                 sql_channel_client.end();
             }).catch(() => { });
+        });
+    }
+
+    // Check if the message has any stickers
+    if (message.stickers.size) {
+        message.stickers.forEach(async stickers => {
+            if (stickers.contentType != 3) {
+                const sql_attachment_client = await createPool({
+                    connectionString:
+                        process.env.POSTGRES_URL  + '?workaround=supabase-pooler.vercel',
+                });
+
+                let mime = ""
+
+                switch (stickers.format) {
+                    case 1:
+                        mime = "image/png"
+                        break;
+                    case 2:
+                        mime = "image/apng"
+                        break;
+                    case 4:
+                        mime = "image/gif"
+                        break;
+                }
+
+                await sql_attachment_client.connect();
+                // Add attachments to list
+                sql_attachment_client.query({
+                    // Note: BIGINT, VARCHAR(1000), VARCHAR(255) <= Your schema
+                    // CREATE TABLE attachments(id BIGINT, name VARCHAR(255), link VARCHAR(1000), type VARCHAR(255));
+                    // ALTER TABLE CHANNELS ADD PRIMARY KEY (id);
+                    text: `insert into attachments (id, link, type, name) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO UPDATE SET id = $1, link = $2, type = $3, name = $4;`,
+                    values: [
+                        stickers.id,
+                        stickers.url,
+                        mime,
+                        stickers.name
+                    ],
+                }).then(() => {
+                    sql_attachment_client.end();
+                }).catch((e) => { });
+            }
         });
     }
 
