@@ -44,10 +44,10 @@ const MainPage: FC = () => {
                     <div className={`flex flex-row h-[140px] justify-between`}>
                         <Spotify />
                         <Info
-                            title={"HACK NIGHT"}
-                            tagline={"now with more jellyfish!"}
-                            taglineColour={"pink"}
-                            version={"5.12"}
+                            title={"SECRET HACK NIGHT"}
+                            tagline={"good luck on finals!"}
+                            taglineColour={"slate"}
+                            version={"5.12.1"}
                         />
                     </div>
                 </div>
