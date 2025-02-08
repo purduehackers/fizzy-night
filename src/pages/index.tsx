@@ -45,9 +45,9 @@ const MainPage: FC = () => {
                         <Spotify />
                         <Info
                             title={"HACK NIGHT"}
-                            tagline={"happy new year!"}
-                            taglineColour={"yellow"}
-                            version={"5.15"}
+                            tagline={"ultra hack energy"}
+                            taglineColour={"pink"}
+                            version={"5.16"}
                         />
                     </div>
                 </div>
