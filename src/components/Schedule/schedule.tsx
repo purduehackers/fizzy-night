@@ -66,7 +66,7 @@ const HACK_NIGHT_SCHEDULE = [
         },
     },
     {
-        title: "Circle: Spoken Language",
+        title: "Circle: Data Science",
         start: {
             day: Day.Friday,
             hour: 21,
@@ -96,7 +96,7 @@ const HACK_NIGHT_SCHEDULE = [
         },
     },
     {
-        title: "Circle: Programming Languages",
+        title: "Circle: Systems",
         start: {
             day: Day.Friday,
             hour: 23,
