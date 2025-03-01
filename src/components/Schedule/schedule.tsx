@@ -65,23 +65,23 @@ const HACK_NIGHT_SCHEDULE = [
             second: 0,
         },
     },
+    // {
+    //     title: "Circle: Data Science",
+    //     start: {
+    //         day: Day.Friday,
+    //         hour: 21,
+    //         minute: 0,
+    //         second: 0,
+    //     },
+    //     end: {
+    //         day: Day.Friday,
+    //         hour: 21,
+    //         minute: 59,
+    //         second: 59,
+    //     },
+    // },
     {
-        title: "Circle: Data Science",
-        start: {
-            day: Day.Friday,
-            hour: 21,
-            minute: 0,
-            second: 0,
-        },
-        end: {
-            day: Day.Friday,
-            hour: 21,
-            minute: 59,
-            second: 59,
-        },
-    },
-    {
-        title: "Passport-Making Ceremony",
+        title: "LIGHTNING TALKS ⚡",
         start: {
             day: Day.Friday,
             hour: 22,
