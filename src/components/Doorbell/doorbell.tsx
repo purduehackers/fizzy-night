@@ -77,7 +77,7 @@ export const DoorbellButton: FC = () => {
                     }
                 >
                     <h1
-                        className={`transition-all 
+                        className={`transition-all
                                     duration-300
                                     ${
                                         connectionState !=
@@ -114,8 +114,9 @@ export const DoorbellButton: FC = () => {
                     <>
                         <br />
                         <a href="mailto:mstanciu@purdue.edu">
-                            <strong>Email Matthew</strong> to let you in
+                            <span className="underline"><strong>Email Matthew</strong></span> to let you in
                         </a>
+                        <p className="text-base">or dial 0 on the rotary phone</p>
                     </>
                 )}
             </h1>
