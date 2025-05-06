@@ -16,6 +16,11 @@ export enum ConnectionState {
     Error,
 }
 
+export type DoorbellWSMessage = {
+    type: "set" | "status";
+    ringing: boolean;
+};
+
 interface DoorbellContextInterface {
     doorbellState: boolean;
     connectionState: ConnectionState;
@@ -23,7 +28,7 @@ interface DoorbellContextInterface {
 }
 
 const DoorbellContext = createContext<DoorbellContextInterface | undefined>(
-    undefined
+    undefined,
 );
 
 export const useDoorbellContext = () => {};
@@ -31,15 +36,13 @@ export const useDoorbellContext = () => {};
 export const DoorbellProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
     const [doorbellState, setDoorbellStateInternal] = useState<boolean>(false);
     const [connectionState, setConnectionState] = useState<ConnectionState>(
-        ConnectionState.Connecting
+        ConnectionState.Connecting,
     );
 
     const ws = useRef<ReconnectingWebSocket | null>(null);
 
     useEffect(() => {
-        ws.current = new ReconnectingWebSocket(
-            "wss://api.purduehackers.com/doorbell"
-        );
+        ws.current = new ReconnectingWebSocket("ws://localhost:3000/doorbell");
 
         ws.current.onopen = () => setConnectionState(ConnectionState.Connected);
         ws.current.onclose = () => {
@@ -54,9 +57,18 @@ export const DoorbellProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         if (!ws.current) return;
 
         ws.current.onmessage = (e) => {
-            const newState = e.data == "true";
+            let message: DoorbellWSMessage;
 
-            if (doorbellState != newState) setDoorbellStateInternal(newState);
+            try {
+                message = JSON.parse(String(e.data));
+            } catch {
+                console.error("Unknown data format", e.data);
+                return;
+            }
+
+            if (message.type === "status") {
+                setDoorbellStateInternal(message.ringing);
+            }
         };
     }, [doorbellState]);
 
@@ -65,7 +77,12 @@ export const DoorbellProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
 
         if (!ws.current) return;
 
-        ws.current.send(state ? "true" : "false");
+        ws.current.send(
+            JSON.stringify({
+                type: "set",
+                ringing: state,
+            }),
+        );
     };
 
     return (
@@ -84,7 +101,7 @@ export const DoorbellProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
 export const useDoorbell = (): [
     boolean,
     ConnectionState,
-    (status: boolean) => void
+    (status: boolean) => void,
 ] => {
     const context = useContext(DoorbellContext);
 
