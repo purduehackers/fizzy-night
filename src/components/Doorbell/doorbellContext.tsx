@@ -42,7 +42,7 @@ export const DoorbellProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
     const ws = useRef<ReconnectingWebSocket | null>(null);
 
     useEffect(() => {
-        ws.current = new ReconnectingWebSocket("ws://localhost:3000/doorbell");
+        ws.current = new ReconnectingWebSocket("wss://api.purduehackers.com/doorbell");
 
         ws.current.onopen = () => setConnectionState(ConnectionState.Connected);
         ws.current.onclose = () => {
