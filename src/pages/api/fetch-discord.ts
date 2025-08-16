@@ -7,7 +7,7 @@ const fetchDiscord = async (req: NextApiRequest, res: NextApiResponse) => {
     })
     await client.connect();
 
-    const { rows: messages } = await client.sql`select * from messages order by uuid desc limit 6;`
+    const { rows: messages } = await client.sql`SELECT * FROM messages WHERE NOT ((content IS NULL OR content = '') AND (attachments IS NULL OR attachments = '')) ORDER BY uuid DESC LIMIT 6;`
     const { rows: users } = await client.sql`select * from users;`
     const { rows: roles } = await client.sql`select * from roles;`
     const { rows: channels } = await client.sql`select * from channels;`
