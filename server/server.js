@@ -54,7 +54,7 @@ client.login(
 
 const io = new Server({
     cors: {
-        origin: "http://localhost:3000"
+        origin: "https://night.purduehackers.com"
     }
 });
 
