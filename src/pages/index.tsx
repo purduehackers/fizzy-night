@@ -27,16 +27,16 @@ const MainPage: FC = () => {
                     <div
                         className={`flex flex-row grow justify-stretch max-h-[calc(100vh-140px)]`}
                     >
-                        {/* <DashboardLunarLander /> */}
+                        <DashboardLunarLander />
                         <div className="flex flex-col w-[50vw] p-4 overflow-hidden">
-                            <Schedule />
-                            <div className="flex-grow flex items-center justify-center">
+                            {/*<Schedule />*/}
+                            {/*<div className="flex-grow flex items-center justify-center">
                                 <h1
                                     className={`text-neutral-600 text-3xl mb-4 text-center`}
                                 >
                                     Big things in the works, stay tuned...
                                 </h1>
-                            </div>
+                            </div>*/}
                         </div>
                         <DiscordFeed />
                     </div>

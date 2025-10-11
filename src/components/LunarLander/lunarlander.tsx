@@ -28,7 +28,7 @@ let all_landers: { [id: string]: LanderObject } = {};
 
 let my_lander: LanderObject = default_lander();
 
-const server_url = "wss://phws.fizzyapple12.com";
+const server_url = "wss://lunar.purduehackers.com";
 
 const font_path = "/vectrex-bold.ttf";
 
