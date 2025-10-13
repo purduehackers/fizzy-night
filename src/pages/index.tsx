@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { get } from "@vercel/edge-config";
 
 import { DoorbellCard } from "@/components/Doorbell/doorbell";
 import { ConfettiCannon } from "@/components/ConfettiCannon/confetticannon";
@@ -10,7 +11,24 @@ import { DashboardLunarLander } from "@/components/LunarLander/lunarlander";
 import { DoorbellProvider } from "@/components/Doorbell/doorbellContext";
 import { Schedule } from "@/components/Schedule/schedule";
 
-const MainPage: FC = () => {
+export async function getServerSideProps() {
+    const title = await get("dashboard_title");
+    const version = await get("dashboard_version");
+    const color = await get("dashboard_color");
+    const tagline = await get("dashboard_tagline");
+
+    const data = { title, version, color, tagline };
+
+    // Pass data to the page via props
+    return { props: { title, version, color, tagline } };
+}
+
+const MainPage: FC<{
+    title: string;
+    version: string;
+    color: string;
+    tagline: string;
+}> = ({ title, version, color, tagline }) => {
     const [shootConfetti, setShootConfetti] = useState(false);
 
     const triggerConfetti = () => {
@@ -45,10 +63,10 @@ const MainPage: FC = () => {
                     <div className={`flex flex-row h-[140px] justify-between`}>
                         <Spotify />
                         <Info
-                            title={"HACK NIGHT"}
-                            tagline={"mushrooms mushrooms"}
-                            taglineColour={"purple"}
-                            version={"6.5"}
+                            title={title}
+                            tagline={tagline}
+                            taglineColour={color}
+                            version={version}
                         />
                     </div>
                 </div>
