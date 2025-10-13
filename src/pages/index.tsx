@@ -1,5 +1,6 @@
-import { DoorbellCard } from "@/components/Doorbell/doorbell";
 import { FC, useState } from "react";
+
+import { DoorbellCard } from "@/components/Doorbell/doorbell";
 import { ConfettiCannon } from "@/components/ConfettiCannon/confetticannon";
 import { Info } from "@/components/InfoCard/info";
 import { Spotify } from "@/components/Spotify/spotify";
