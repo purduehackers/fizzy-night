@@ -24,10 +24,10 @@ export const Info: FC<{
                 <div
                     className={`text-sm
                                 border-[1px]
-                                rounded-md 
+                                rounded-md
                                 ${`border-${taglineColour}-400`}
                                 ${`bg-${taglineColour}-950`}
-                                ${`text-${taglineColour}-400`}
+                                ${taglineColour === "white" ? `text-white` : `text-${taglineColour}-400`}
                                 mr-auto
                                 px-2
                                 text-center`}
