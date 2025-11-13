@@ -48,7 +48,11 @@ export const DoorbellProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         ws.current.onerror = () => {
             setConnectionState(ConnectionState.Error);
         };
-    });
+
+		return () => {
+			ws.current?.close();
+		};
+    }, []);
 
     useEffect(() => {
         if (!ws.current) return;
